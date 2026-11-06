@@ -1,0 +1,754 @@
+<!-- Typotechtural 1.20 · Footer: site scripts · credits and licence in <head> -->
+<!-- 0. Core (window.TT; must stay first) -->
+<script>
+/* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
+(function () {
+  if (!window.fetch || !window.DOMParser || !window.URL) return;
+  var CACHE = 'tt3:', memo = {};
+  var TT = {
+    cats: { security: 'Security', compliance: 'Compliance', internet: 'Internet', itsm: 'ITSM',
+            career: 'Career', tech: 'Tech', gaming: 'Gaming' },
+    home: function () {
+      var logo = document.querySelector('.topbar .logo, .footer__logo');
+      return new URL(logo ? logo.getAttribute('href') : '/', location.href).href;
+    },
+    get: function (url) {
+      if (!memo[url]) memo[url] = fetch(url, { credentials: 'same-origin' })
+        .then(function (r) { return r.ok ? r.text() : ''; }).catch(function () { return ''; });
+      return memo[url];
+    },
+    doc: function (html) { return new DOMParser().parseFromString(html, 'text/html'); },
+    el: function (tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text) e.textContent = text;
+      return e;
+    },
+    trimWords: function (t, n) {
+      var w = t.split(' ');
+      return w.length > n ? w.slice(0, n).join(' ').replace(/[,;:.\-–—]+$/, '') + '…' : t;
+    },
+    /* category slug from an element carrying u-tag--<slug>, if that tag is a category */
+    catOf: function (node) {
+      var m = node && (node.getAttribute('class') || '').match(/u-tag--([a-z0-9-]+)/);
+      return m && TT.cats[m[1]] ? m[1] : null;
+    },
+    postInfo: function (url) {
+      try { var hit = JSON.parse(sessionStorage.getItem(CACHE + url)); if (hit) return Promise.resolve(hit); } catch (e) {}
+      return TT.get(url).then(function (html) {
+        if (!html) return { c: null, t: '' };
+        var d = TT.doc(html), text = '';
+        var ps = d.querySelectorAll('.content__entry p');
+        for (var j = 0; j < ps.length; j++) {
+          if (ps[j].closest('.post__toc, figure, blockquote, table, .cv-toc')) continue;
+          var t = ps[j].textContent.replace(/\s+/g, ' ').trim();
+          if (t.length > 40) { text = t; break; }
+        }
+        var info = { c: TT.catOf(d.querySelector('.content__header .u-tag')), t: text };
+        try { sessionStorage.setItem(CACHE + url, JSON.stringify(info)); } catch (e) {}
+        return info;
+      });
+    },
+    cardInfo: function (card, base) {
+      var a = card.querySelector('.c-card__title a'), t = card.querySelector('time'), im = card.querySelector('img');
+      if (!a) return null;
+      var src = im ? (im.getAttribute('srcset') || '').split(',')[0].trim().split(' ')[0] || im.getAttribute('src') : '';
+      return { url: new URL(a.getAttribute('href'), base).href, title: a.textContent.trim(),
+               iso: t ? t.getAttribute('datetime') || '' : null, date: t ? t.textContent.trim() : '',
+               cat: TT.catOf(card.querySelector('.c-card__tag')), img: src ? new URL(src, base).href : '' };
+    },
+    /* Same markup as a post's Previous/Next (Custom CSS section 50, .tt-pagehost). */
+    tile: function (dir, href, n, per, count, cat, img) {
+      var wrap = TT.el('div', 'content__nav__' + dir);
+      var a = TT.el('a', 'content__nav__link' + (cat ? ' tt-fc-' + cat : ''));
+      a.href = href;
+      a.rel = dir;
+      var txt = TT.el('div', 'u-small', dir === 'prev' ? 'Previous page' : 'Next page');
+      var first = (n - 1) * per + 1;
+      txt.appendChild(TT.el('h5', null, 'Page ' + n + ' · ' + (count === 1 ? 'post ' + first : 'posts ' + first + '–' + (first + count - 1))));
+      var pic = null;
+      if (img) { pic = TT.el('img'); pic.src = img; pic.alt = ''; }   /* no loading attr: the theme hides img[loading] until it gets .is-loaded */
+      if (dir === 'prev') { if (pic) a.appendChild(pic); a.appendChild(txt); }
+      else { a.appendChild(txt); if (pic) a.appendChild(pic); }
+      wrap.appendChild(a);
+      return wrap;
+    },
+    /* toc(root, [section, entry], skip): two-level heading index; returns {el, count, mark, reveal}. */
+    toc: function (root, levels, skip) {
+      levels = levels || ['H3', 'H4'];
+      var used = {}, all = [], secs = [];
+      Array.prototype.forEach.call(document.querySelectorAll('[id]'), function (e) { used[e.id] = 1; });
+      function slug(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+      function text(h) { return h.textContent.replace(/\s+/g, ' ').trim(); }
+      function idFor(h) {
+        if (h.id) return h.id;
+        var s = slug(text(h)) || 'section', n = s, i = 2;
+        while (used[n]) n = s + '-' + i++;
+        used[n] = 1; h.id = n; return n;
+      }
+      Array.prototype.forEach.call(root.querySelectorAll(levels.join(',')), function (h) {
+        if (skip && h.closest(skip)) return;
+        if (h.tagName === levels[0]) secs.push({ h: h, kids: [] });
+        else if (secs.length) secs[secs.length - 1].kids.push(h);
+      });
+      var ol = TT.el('ol', 'tt-toc');
+      function link(h) { var a = TT.el('a', null, text(h)); a.href = '#' + idFor(h); a.setAttribute('data-target', h.id); all.push(h); return a; }
+      function open(li, on) {
+        Array.prototype.forEach.call(ol.children, function (x) {
+          var b = x.querySelector('.tt-toc__btn'), o = x === li ? on : false;
+          x.classList.toggle('is-open', o);
+          if (b) b.setAttribute('aria-expanded', String(o));
+        });
+      }
+      secs.forEach(function (s) {
+        var li = TT.el('li'), row = TT.el('div', 'tt-toc__row'), a = link(s.h);
+        row.appendChild(a);
+        li.appendChild(row);
+        if (s.kids.length) {
+          a.appendChild(TT.el('span', 'tt-toc__n', '· ' + s.kids.length));
+          var b = TT.el('button', 'tt-toc__btn');
+          b.type = 'button';
+          b.setAttribute('aria-expanded', 'false');
+          b.setAttribute('aria-label', text(s.h));
+          row.appendChild(b);
+          var sub = TT.el('ol', 'tt-toc__sub');
+          s.kids.forEach(function (k) { var l2 = TT.el('li'); l2.appendChild(link(k)); sub.appendChild(l2); });
+          li.appendChild(sub);
+          b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open(li, !li.classList.contains('is-open')); });
+        }
+        ol.appendChild(li);
+      });
+      function mark() {
+        var cur = null;
+        for (var i = 0; i < all.length; i++) { if (all[i].getBoundingClientRect().top < window.innerHeight * 0.2) cur = all[i]; else break; }
+        Array.prototype.forEach.call(ol.querySelectorAll('a.is-current'), function (x) { x.classList.remove('is-current'); });
+        if (!cur) return null;
+        var a = ol.querySelector('a[data-target="' + cur.id + '"]');
+        if (a) a.classList.add('is-current');
+        return a;
+      }
+      function reveal() {
+        var a = mark(), li = a && a.closest('.tt-toc > li');
+        if (li && li.querySelector('.tt-toc__sub')) open(li, true);
+        return a;
+      }
+      return { el: ol, count: secs.length, mark: mark, reveal: reveal };
+    }
+  };
+  window.TT = TT;
+})();
+</script>
+<!-- 1. Cards -->
+<script>
+/* Card excerpts and category colours: homepage and tag cards, post Previous/Next tiles. */
+(function () {
+  var TT = window.TT;
+  if (!TT) return;
+  var WORDS = 12;                       /* excerpt length in words */
+
+  /* Drop whole words until the excerpt fits its clamped lines, so it never ends mid-word. */
+  function fit(p) {
+    var w = p.getAttribute('data-full').replace(/…$/, '').split(' ');
+    p.textContent = p.getAttribute('data-full');
+    while (p.scrollHeight > p.clientHeight + 1 && w.length > 3) {
+      w.pop();
+      p.textContent = w.join(' ').replace(/[,;:.\-–—]+$/, '') + '…';
+    }
+  }
+
+  /* Cards: colour + excerpt. */
+  Array.prototype.forEach.call(document.querySelectorAll('.c-card'), function (card) {
+    var a = card.querySelector('.c-card__title a');
+    if (!a || !a.href) return;
+    TT.postInfo(a.href).then(function (d) {
+      if (d.c) card.classList.add('tt-fc-' + d.c);
+      if (d.t && !card.querySelector('.tt-excerpt')) {
+        var title = card.querySelector('.c-card__title');
+        if (!title) return;
+        var p = TT.el('p', 'tt-excerpt');
+        p.setAttribute('data-full', TT.trimWords(d.t, WORDS));
+        title.insertAdjacentElement('afterend', p);
+        fit(p);
+      }
+    });
+  });
+
+  /* Post pages: Previous/Next tiles take the linked post's category colour. */
+  Array.prototype.forEach.call(document.querySelectorAll('.content__nav__link'), function (link) {
+    if (!link.href) return;
+    TT.postInfo(link.href).then(function (d) { if (d.c) link.classList.add('tt-fc-' + d.c); });
+  });
+
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t);
+    t = setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll('.tt-excerpt[data-full]'), fit); }, 200);
+  });
+})();
+</script>
+<!-- 2. Banner -->
+<script>
+/* Masthead banner: a line drawing per category (main tag, tag page or Page fc-* marker), else random.
+   Colours from --cat-<category>. Test override: ?cbf=<category slug>. */
+(function () {
+  'use strict';
+  const TT = window.TT;
+  if (!TT) return;
+
+  const CATS = Object.keys(TT.cats);
+  /* Pages cannot have tags: a Page opts into a category with a marker class in its content (Custom CSS
+     section 06). fc-silver is the neutral "site page" marker (About, legal pages…; grey = Compliance). */
+  const PAGE_MARKERS = Object.assign({ 'fc-silver': 'compliance' },
+    ...CATS.map(c => ({ ['fc-' + c]: c })));
+  const MOUNT = ['#cbanner-mount', 'header.topbar'];        // inserted before the first match (else top of <body>)
+  const MAIN_TAG = '.content__header .u-header__meta';    // TechNews renders the post's main tag here
+
+  /* Line-art description per category (the topic label is TT.cats[f]). */
+  const ALT = {
+    security:   'Radar sweep watching over a shield',
+    compliance: 'Audit trail leading to a ticked checklist and an approval seal',
+    internet:   'Network diagram: cloud uplink, server core and switches',
+    itsm:       'Process flow: ticket, triage, two paths to resolved, with a feedback loop',
+    career:     'Staircase of milestones up to a briefcase, path continuing onward',
+    tech:       'Code window wired by circuit traces to a chip',
+    gaming:     'Game controller with hearts and an experience bar',
+  };
+
+  const WORDMARK = `<svg class="cbanner__word" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 808.9 100" role="img" aria-label="conram.it"><path fill="currentColor" transform="scale(0.88,1)" d="M100.07 81.87L100.07 100L34.66 100Q32.15 100 29.25 99.41Q26.36 98.81 23.54 97.56Q20.71 96.30 18.13 94.32Q15.55 92.33 13.56 89.50Q11.58 86.68 10.39 82.95Q9.21 79.22 9.21 74.55L9.21 25.45Q9.21 22.94 9.80 20.05Q10.39 17.15 11.65 14.33Q12.90 11.51 14.92 8.93Q16.95 6.35 19.77 4.36Q22.59 2.37 26.29 1.19Q29.99 0 34.66 0L100.07 0L100.07 18.13L34.66 18.13Q31.10 18.13 29.22 20.01Q27.34 21.90 27.34 25.59L27.34 74.55Q27.34 78.03 29.25 79.95Q31.17 81.87 34.66 81.87M223.57 40.45L223.57 59.55Q223.57 68.69 220.43 76.36Q217.29 84.03 211.71 89.61Q206.13 95.19 198.50 98.29Q190.86 101.39 181.87 101.39L157.32 101.39Q148.32 101.39 140.65 98.29Q132.98 95.19 127.40 89.61Q121.82 84.03 118.65 76.36Q115.48 68.69 115.48 59.55L115.48 40.45Q115.48 31.38 118.65 23.68Q121.82 15.97 127.40 10.43Q132.98 4.88 140.65 1.74Q148.32-1.39 157.32-1.39L181.87-1.39Q190.86-1.39 198.50 1.74Q206.13 4.88 211.71 10.43Q217.29 15.97 220.43 23.68Q223.57 31.38 223.57 40.45M205.44 59.55L205.44 40.45Q205.44 35.08 203.73 30.72Q202.02 26.36 198.92 23.26Q195.81 20.15 191.45 18.44Q187.10 16.74 181.87 16.74L157.32 16.74Q152.02 16.74 147.66 18.44Q143.30 20.15 140.16 23.26Q137.03 26.36 135.32 30.72Q133.61 35.08 133.61 40.45L133.61 59.55Q133.61 64.92 135.32 69.28Q137.03 73.64 140.16 76.74Q143.30 79.85 147.66 81.56Q152.02 83.26 157.32 83.26L181.73 83.26Q187.03 83.26 191.38 81.56Q195.74 79.85 198.88 76.74Q202.02 73.64 203.73 69.28Q205.44 64.92 205.44 59.55M344.28 0L344.28 92.26Q344.28 94.21 343.54 95.89Q342.81 97.56 341.59 98.78Q340.37 100 338.70 100.70Q337.02 101.39 335.14 101.39Q333.47 101.39 331.76 100.77Q330.05 100.14 328.73 98.74L262.48 29.57L262.48 100L244.35 100L244.35 7.74Q244.35 4.95 245.91 2.68Q247.48 0.42 249.92-0.70Q252.50-1.74 255.22-1.22Q257.94-0.70 259.90 1.32L326.15 70.43L326.15 0M468.12 22.04L468.12 33.61Q468.12 39.82 466.59 44.70Q465.05 49.58 462.44 53.31Q459.82 57.04 456.41 59.69Q452.99 62.34 449.26 64.05Q445.53 65.76 441.73 66.53Q437.93 67.29 434.58 67.29L472.45 100L444.41 100L406.62 67.29L393.58 67.29L393.58 49.16L434.58 49.16Q438 48.88 440.82 47.73Q443.65 46.58 445.70 44.63Q447.76 42.68 448.88 39.92Q449.99 37.17 449.99 33.61L449.99 22.18Q449.99 20.64 449.61 19.84Q449.22 19.04 448.63 18.65Q448.04 18.27 447.38 18.20Q446.71 18.13 446.16 18.13L386.32 18.13L386.32 100L368.19 100L368.19 9.14Q368.19 7.25 368.89 5.58Q369.59 3.91 370.81 2.65Q372.03 1.39 373.70 0.70Q375.38 0 377.33 0L446.16 0Q452.22 0 456.41 2.20Q460.59 4.39 463.21 7.71Q465.82 11.02 466.97 14.85Q468.12 18.69 468.12 22.04M587.30 9.14L587.30 100L569.17 100L569.17 75.45L505.43 75.45L505.43 100L487.30 100L487.30 50Q487.30 39.05 491.06 29.85Q494.83 20.64 501.52 14.02Q508.22 7.39 517.35 3.70Q526.49 0 537.30 0L578.16 0Q580.04 0 581.72 0.70Q583.39 1.39 584.65 2.65Q585.90 3.91 586.60 5.58Q587.30 7.25 587.30 9.14M505.43 50L505.43 57.32L569.17 57.32L569.17 18.13L537.30 18.13Q536.46 18.13 533.78 18.38Q531.09 18.62 527.57 19.60Q524.05 20.57 520.14 22.59Q516.24 24.62 512.96 28.17Q509.68 31.73 507.56 37.06Q505.43 42.40 505.43 50M727.60 7.74L727.60 100L709.33 100L709.33 40.45L677.18 97Q676 99.16 673.87 100.28Q671.74 101.39 669.30 101.39Q666.93 101.39 664.87 100.28Q662.82 99.16 661.63 97L629.34 40.45L629.34 100L611.21 100L611.21 7.74Q611.21 4.60 613.06 2.16Q614.91-0.28 617.91-1.12Q619.37-1.46 620.84-1.36Q622.30-1.26 623.66-0.73Q625.02-0.21 626.14 0.73Q627.25 1.67 628.02 3L669.30 74.76L710.59 3Q712.19 0.35 715.01-0.77Q717.84-1.88 720.91-1.12Q723.84-0.28 725.72 2.16Q727.60 4.60 727.60 7.74M801.93 0L801.93 100L783.80 100L783.80 0M916.37 0L916.37 18.13L876.41 18.13L876.41 100L858.28 100L858.28 18.13L818.25 18.13L818.25 0"/><circle class="cw-dot" cx="664.96" cy="89.00" r="11.00"/></svg>`;
+
+  /* ---------- Line art (canvas 600×190, viewBox window 140–600) ---------- */
+  const ART = {
+  /* Canvas 600×190; subject spans x≈150–590 (left part fades). One established symbol + one piece of context. */
+  Internet(){ // horizontal flow: cloud uplink → core (server stack) → backbone of switches, endpoints above and below
+    const y=95; let g='';
+    g+=`<path class="q" d="M168 ${y+18} a18 18 0 0 1 5-33 a25 25 0 0 1 45-10 a20 20 0 0 1 28 18 a15 15 0 0 1 -3 25 z"/>`;
+    g+=`<path class="a" d="M252 ${y} H288" stroke-dasharray="5 5"/>`;
+    for(let i=0;i<3;i++){const yy=y-27+i*18; g+=`<rect class="a" x="292" y="${yy}" width="64" height="14" rx="3"/><circle class="af" cx="346" cy="${yy+7}" r="2"/>`;}
+    g+=`<line class="q" x1="354" y1="${y}" x2="590" y2="${y}" style="stroke-opacity:.5"/>`;
+    [400,470,540].forEach(x=>{
+      g+=`<line class="q" x1="${x}" y1="${y-8}" x2="${x}" y2="${y-66}"/><line class="q" x1="${x}" y1="${y+8}" x2="${x}" y2="${y+66}"/>`;
+      g+=`<line class="q" x1="${x}" y1="${y-36}" x2="${x-18}" y2="${y-36}"/><line class="q" x1="${x}" y1="${y+36}" x2="${x+18}" y2="${y+36}"/>`;
+      g+=`<rect class="q" x="${x-12}" y="${y-8}" width="24" height="16" rx="3" style="fill:var(--bg);stroke-opacity:.6"/>`;
+      g+=`<circle class="qf" cx="${x}" cy="${y-66}" r="5"/><circle class="qf" cx="${x-18}" cy="${y-36}" r="3.5"/><circle class="qf" cx="${x}" cy="${y+66}" r="5"/><circle class="qf" cx="${x+18}" cy="${y+36}" r="3.5"/>`;});
+    g+=`<circle class="qf" cx="590" cy="${y}" r="3"/>`;
+    return g;
+  },
+  Security(){ const gid='sw'+Math.random().toString(36).slice(2,8); // radar sweep watching over a shield
+    const cx=430, cy=95; let g=`<defs><linearGradient id="${gid}" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="var(--fa)" stop-opacity="0"/><stop offset="1" stop-color="var(--fa)" stop-opacity=".35"/></linearGradient></defs>`;
+    [40,80,120,160].forEach(r=>g+=`<circle class="q" cx="${cx}" cy="${cy}" r="${r}"/>`);
+    g+=`<line class="qs" x1="${cx-170}" y1="${cy}" x2="${cx+170}" y2="${cy}"/><line class="qs" x1="${cx}" y1="${cy-170}" x2="${cx}" y2="${cy+170}"/>`;
+    const R=160, a1=-30*Math.PI/180, a2=-75*Math.PI/180;
+    g+=`<path d="M${cx} ${cy} L${cx+R*Math.cos(a2)} ${cy+R*Math.sin(a2)} A${R} ${R} 0 0 1 ${cx+R*Math.cos(a1)} ${cy+R*Math.sin(a1)} Z" fill="url(#${gid})"/>`;
+    g+=`<line class="a" x1="${cx}" y1="${cy}" x2="${cx+R*Math.cos(a1)}" y2="${cy+R*Math.sin(a1)}" stroke-width="2.2"/>`;
+    // shield at the centre (heraldic outline) with a check
+    g+=`<path class="a" d="M${cx} ${cy-30} l24 9 v18 c0 18 -12 28 -24 34 c-12 -6 -24 -16 -24 -34 v-18 z" style="fill:var(--bg)" stroke-width="2.2"/>`;
+    g+=`<path class="a" d="M${cx-10} ${cy+1} l7 7 l13 -15" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+    // contacts: one picked up by the sweep, others quiet
+    // track of a contact approaching from the left: fading dots, then quiet
+    [[180,40,.12],[215,50,.18],[250,58,.26],[285,64,.34],[318,68,.45]].forEach(([x,yy,o])=>g+=`<circle cx="${x}" cy="${yy}" r="3" style="fill:var(--fg);fill-opacity:${o}"/>`);
+    g+=`<path class="qs" d="M180 40 Q 260 60 318 68" stroke-dasharray="2 5"/>`;
+    const bx=cx+118*Math.cos(-40*Math.PI/180), by=cy+118*Math.sin(-40*Math.PI/180);
+    g+=`<circle class="af" cx="${bx}" cy="${by}" r="5"/><circle class="a" cx="${bx}" cy="${by}" r="11" stroke-opacity=".6"/>`;
+    g+=`<circle class="qf" cx="${cx-95}" cy="${cy+40}" r="3"/><circle class="qf" cx="${cx+60}" cy="${cy+70}" r="3"/><circle class="af" cx="${cx-112}" cy="${cy-27}" r="4"/><circle class="a" cx="${cx-112}" cy="${cy-27}" r="10" stroke-opacity=".5"/>`;
+    return g;
+  },
+  Compliance(){ // audit trail of passed checkpoints → clipboard checklist → approved with a seal
+    let g=`<path class="q" d="M170 100 H300" stroke-dasharray="3 5"/>`;
+    [[185,.35],[225,.5],[265,.7]].forEach(([x,o])=>g+=`<circle cx="${x}" cy="100" r="10" style="fill:var(--bg);stroke:var(--fg);stroke-opacity:${o*.6}"/><path d="M${x-4.5} 100 l3 3 l6 -7" style="fill:none;stroke:var(--fa);stroke-opacity:${o};stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"/>`);
+    g+=`<rect class="q" x="300" y="20" width="170" height="160" rx="6" style="fill:var(--bg)"/>`;
+    g+=`<rect class="q" x="355" y="12" width="60" height="18" rx="4" style="fill:var(--bg);stroke-opacity:.6"/>`;
+    const W=[100,80,110,70,95];
+    W.forEach((w,i)=>{const y=46+i*24, x=318;
+      g+=`<rect class="q" x="${x}" y="${y}" width="14" height="14" rx="2"/>`;
+      g+=`<path class="a" d="M${x+3} ${y+7.5} l3.5 3.5 l6 -8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`;
+      g+=`<line class="q" x1="${x+26}" y1="${y+7}" x2="${x+26+w}" y2="${y+7}" stroke-width="2" stroke-linecap="round"/>`;});
+    // seal / rosette overlapping the corner
+    const sx=500, sy=118; let ro='';
+    for(let i=0;i<16;i++){const a=i*Math.PI/8, r=i%2?30:34; ro+=`${i?'L':'M'}${sx+r*Math.cos(a)} ${sy+r*Math.sin(a)} `;}
+    g+=`<path class="a" d="${ro}Z" style="fill:var(--bg)" stroke-width="1.8"/><circle class="a" cx="${sx}" cy="${sy}" r="22"/>`;
+    g+=`<path class="a" d="M${sx-10} ${sy} l7 7 l13 -14" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    g+=`<path class="a" d="M${sx-14} ${sy+30} l-6 26 l10 -6 l6 10 l4 -28 M${sx+14} ${sy+30} l6 26 l-10 -6 l-6 10 l-4 -28" stroke-width="1.4"/>`;
+    return g;
+  },
+  ITSM(){ // process flow: ticket → triage diamond → two paths → resolved, with a feedback loop back
+    let g='';
+    const box=(x,y,w,h,cls)=>`<rect class="${cls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="5" style="fill:var(--bg)"/>`;
+    g+=box(176,79,46,32,'q')+`<line class="qs" x1="185" y1="91" x2="212" y2="91"/><line class="qs" x1="185" y1="99" x2="203" y2="99"/>`;
+    g+=`<path class="q" d="M222 95 H272"/><path class="q" d="M266 90 l6 5 l-6 5"/>`;
+    g+=`<path class="a" d="M306 69 L332 95 L306 121 L280 95 Z" style="fill:var(--bg)" stroke-width="2.6" stroke-linejoin="round"/><circle class="af" cx="306" cy="95" r="4"/>`;
+    g+=`<path class="a" d="M332 95 H360 V58 H400" stroke-width="2.2"/><path class="q" d="M306 121 V140 H400"/>`;
+    g+=box(400,42,58,32,'a')+box(400,124,58,32,'q');
+    g+=`<line class="qs" x1="410" y1="54" x2="446" y2="54"/><line class="qs" x1="410" y1="62" x2="436" y2="62"/><line class="qs" x1="410" y1="136" x2="446" y2="136"/><line class="qs" x1="410" y1="144" x2="436" y2="144"/>`;
+    g+=`<path class="a" d="M458 58 H488 V95 H512" stroke-width="2.2"/><path class="q" d="M458 140 H488 V95"/>`;
+    g+=`<circle class="a" cx="530" cy="95" r="18" style="fill:var(--bg)" stroke-width="2.4"/><path class="a" d="M522 95 l5 5 l10 -11" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    g+=`<path class="q" d="M530 113 V172 H199 V111" stroke-dasharray="4 5"/><path class="q" d="M194 117 l5 -6 l5 6"/>`;
+    return g;
+  },
+  Career(){ // staircase of milestones → briefcase on the top step → dashed path onward
+    let g='';
+    for(let x=175;x<=590;x+=46) g+=`<line class="qs" x1="${x}" y1="172" x2="${x}" y2="178"/>`;
+    g+=`<line class="q" x1="168" y1="178" x2="592" y2="178"/>`;
+    const X=[175,221,267,313,359,405], Y=[170,146,122,98,74,50];
+    let faint=`M168 170`, acc=``;
+    X.forEach((x,i)=>{ const seg=` H${x+46}` + (i<X.length-1?` V${Y[i+1]}`:''); if(i<3) faint+=seg; else acc+= (acc?'':`M${x} ${Y[i]}`)+seg; });
+    g+=`<path class="q" d="${faint}"/><path class="a" d="${acc}" stroke-width="3" stroke-linejoin="round"/>`;
+    X.slice(1).forEach((x,i)=>{const y=Y[i+1]; g+= i>=2?`<circle class="af" cx="${x}" cy="${y}" r="5"/>`:`<circle class="qf" cx="${x}" cy="${y}" r="3.5"/>`;});
+    // briefcase on top step
+    const bx=420, by=18;
+    g+=`<rect class="a" x="${bx}" y="${by}" width="56" height="32" rx="5" style="fill:var(--bg)" stroke-width="2.6"/><path class="a" d="M${bx+19} ${by} v-5 a3 3 0 0 1 3 -3 h12 a3 3 0 0 1 3 3 v5" stroke-width="2.2"/><line class="a" x1="${bx}" y1="${by+13}" x2="${bx+56}" y2="${by+13}" stroke-width="1.6"/><rect class="af" x="${bx+24}" y="${by+10}" width="8" height="7" rx="1.5"/>`;
+    // onward
+    g+=`<path class="q" d="M451 50 C 510 50, 540 36, 590 28" stroke-dasharray="4 6"/><circle class="qf" cx="590" cy="28" r="3"/>`;
+    return g;
+  },
+  Tech(){ // code window (software) wired by circuit traces to a chip (hardware)
+    let g='';
+    // code window
+    g+=`<rect class="q" x="180" y="48" width="140" height="94" rx="5" style="fill:var(--bg)"/><line class="q" x1="180" y1="62" x2="320" y2="62"/>`;
+    [190,198,206].forEach(x=>g+=`<circle class="qf" cx="${x}" cy="55" r="2"/>`);
+    g+=`<path class="a" d="M200 82 l-9 9 l9 9 M232 82 l9 9 l-9 9 M222 78 l-12 26" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    [[256,84,50],[256,96,36],[192,118,90],[192,128,64]].forEach(([x,y,w])=>g+=`<line class="q" x1="${x}" y1="${y}" x2="${x+w}" y2="${y}" stroke-linecap="round" stroke-width="2"/>`);
+    // chip
+    const cx=468, cy=95, h=34;
+    for(let i=-2;i<=2;i++){const o=i*13;
+      g+=`<line class="q" x1="${cx-h-14}" y1="${cy+o}" x2="${cx-h}" y2="${cy+o}"/><line class="q" x1="${cx+h}" y1="${cy+o}" x2="${cx+h+14}" y2="${cy+o}"/>`;
+      g+=`<line class="q" x1="${cx+o}" y1="${cy-h-14}" x2="${cx+o}" y2="${cy-h}"/><line class="q" x1="${cx+o}" y1="${cy+h}" x2="${cx+o}" y2="${cy+h+14}"/>`;}
+    g+=`<rect class="a" x="${cx-h}" y="${cy-h}" width="${2*h}" height="${2*h}" rx="6" style="fill:var(--bg)" stroke-width="2.6"/><rect class="q" x="${cx-16}" y="${cy-16}" width="32" height="32" rx="3"/><circle class="af" cx="${cx-h+9}" cy="${cy-h+9}" r="3"/>`;
+    // traces code → chip (accent on the active one)
+    g+=`<path class="q" d="M320 74 H360 V69 H${cx-h-14}"/><path class="a" d="M320 95 H${cx-h-14}" stroke-width="2"/><path class="q" d="M320 118 H350 V121 H${cx-h-14}"/>`;
+    [[360,69],[350,121]].forEach(([x,y])=>g+=`<circle class="qf" cx="${x}" cy="${y}" r="2.5"/>`);
+    // traces out to the right
+    g+=`<path class="q" d="M${cx+h+14} 82 H560 V60 H590"/><path class="q" d="M${cx+h+14} 108 H575 V130 H590"/><circle class="qf" cx="590" cy="60" r="3"/><circle class="qf" cx="590" cy="130" r="3"/>`;
+    return g;
+  },
+  Gaming(){ // controller, with hearts and an XP bar as context
+    let g='';
+    const heart=(x,y,full)=>`<path class="${full?'af':'q'}" d="M${x} ${y+4} c0 -6 -9 -7 -9 -1 c0 5 9 10 9 10 c0 0 9 -5 9 -10 c0 -6 -9 -5 -9 1z" ${full?'':'style="fill:none"'} stroke-width="1.4"/>`;
+    g+=heart(200,52,1)+heart(225,52,1)+heart(250,52,0);
+    g+=`<rect class="q" x="190" y="78" width="150" height="10" rx="5"/><rect class="af" x="192" y="80" width="98" height="6" rx="3"/>`;
+    [215,240,265,290,315].forEach(x=>g+=`<line class="qs" x1="${x}" y1="78" x2="${x}" y2="88"/>`);
+    g+=`<path class="qs" d="M190 112 h46 M190 124 h30" stroke-width="2" stroke-linecap="round"/>`;
+    // controller
+    const C='M392 70 Q400 54 424 56 L496 56 Q520 54 528 70 L554 128 Q562 152 540 156 Q524 158 512 140 L498 120 L422 120 L408 140 Q396 158 380 156 Q358 152 366 128 Z';
+    g+=`<path class="a" d="${C}" style="fill:var(--bg)" stroke-width="2.6" stroke-linejoin="round"/>`;
+    g+=`<path class="a" d="M418 76 v24 M406 88 h24" stroke-width="5" stroke-linecap="round"/>`;
+    [[502,76],[515,88],[502,100],[489,88]].forEach(([x,y],i)=>g+= i===0?`<circle class="af" cx="${x}" cy="${y}" r="5"/>`:`<circle class="a" cx="${x}" cy="${y}" r="5" stroke-width="1.8"/>`);
+    g+=`<circle class="q" cx="440" cy="108" r="9"/><circle class="q" cx="480" cy="108" r="9"/><line class="qs" x1="452" y1="72" x2="468" y2="72" stroke-width="3" stroke-linecap="round"/>`;
+    return g;
+  },
+};
+
+  function featureFromTags() {
+    // Publii tag archives have no post main-tag band; use their generated tag URL.
+    const tagPath = document.querySelector('.main.page--tag') && location.pathname.match(/\/tags\/([^/]+)(?:\/|$)/);
+    if (tagPath && TT.cats[tagPath[1]]) return tagPath[1];
+    const page = document.querySelector('.main.page .content__entry');
+    if (page) for (const cls in PAGE_MARKERS) if (page.querySelector('.' + cls)) return PAGE_MARKERS[cls];
+    // the post's main tag, if it is a category tag
+    const main = document.querySelector(MAIN_TAG);
+    if (main) for (const a of main.querySelectorAll('a[href]')) {
+      const slug = a.getAttribute('href').replace(/\/(index\.html)?$/, '').split('/').pop();
+      if (TT.cats[slug]) return slug;
+    }
+    return null;                                       // random (home, listings, untagged, unmarked Pages)
+  }
+
+  function build(f) {
+    const topic = TT.cats[f];
+    const el = document.createElement('div');   // the masthead landmark stays <header class="topbar">
+    el.className = 'cbanner';
+    el.dataset.ground = 'ebony';                 // Custom CSS section 08 keys the wordmark dot on it
+    el.style.setProperty('--fa', `var(--cat-${f})`);
+    const art = ART[topic]().replace(/stroke-width="([\d.]+)"/g, (m, v) => `stroke-width="${(v * 1.25).toFixed(2)}"`);   // accent lines a little heavier
+    el.innerHTML = `<div class="cbanner__inner">` +
+      `<a class="cbanner__brand" href="${TT.home()}" aria-label="conram.it — home">${WORDMARK}` +
+      `<div class="cbanner__tag" aria-hidden="true"><span>Ideas</span><i>/</i><span>Systems</span><i>/</i><span>Notebook</span></div></a>` +
+      `<div class="cbanner__label">${topic}</div>` +
+      `<div class="cbanner__art" role="img" aria-label="${ALT[f]}"><svg viewBox="140 0 460 190" preserveAspectRatio="xMaxYMid meet">${art}</svg></div>` +
+      `<div class="cbanner__belt" aria-hidden="true"></div></div>`;
+    return el;
+  }
+
+  function mount() {
+    const forced = new URLSearchParams(location.search).get('cbf');   // test override: ?cbf=<category slug>
+    const f = (forced && TT.cats[forced]) ? forced : featureFromTags();
+    const el = build(f || CATS[Math.floor(Math.random() * CATS.length)]);
+    const target = MOUNT.map(s => document.querySelector(s)).find(Boolean);
+    if (target) target.before(el); else document.body.prepend(el);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
+  else mount();
+})();
+</script>
+<!-- 3. Featured image -->
+<script>
+/* Featured image moved (not copied) into the text after the opening lines, Posts and Pages. */
+(function () {
+  'use strict';
+  const CONFIG = {
+    onlyOn:  'body.post-template, body.page-template',
+    post:    '.main.post > .content',
+    page:    '.main.page > .content',
+    minChars: 160,   // a "few lines": the intro is at least this long (else take the next paragraph too)
+    minPara: 60,     // shorter paragraphs before the intro are notes, not the intro (e.g. "Repost from LinkedIn")
+  };
+  function run() {
+    if (!document.querySelector(CONFIG.onlyOn)) return;
+    const isPage = document.body.matches('body.page-template');
+    const content = document.querySelector(isPage ? CONFIG.page : CONFIG.post);
+    const fig = content && content.querySelector(':scope > .content__featured-image');
+    const entry = content && content.querySelector(':scope > .content__entry');
+    if (!fig || !entry) return;
+    // Page colour markers can wrap the whole reading text; keep the figure inside that wrapper.
+    const scope = isPage && entry.children.length === 1 && entry.firstElementChild.matches('[class*="fc-"]')
+      ? entry.firstElementChild : entry;
+    // Skip the ToC, leading headings and short notes ("Repost from LinkedIn", right/centre-aligned lines).
+    // The first real paragraph (>= minPara chars) starts the intro; keep adding paragraphs until the intro
+    // reaches minChars, and stop early at a heading, list, table, code block… (the image goes before it).
+    const isNote = el => el.matches('p.align-right, p.align-center, p.msg') || el.textContent.trim().length < CONFIG.minPara;
+    let anchor = null, chars = 0;
+    for (const el of scope.children) {
+      const para = el.matches('p, blockquote');
+      if (!anchor) {
+        if (para && !isNote(el)) { anchor = el; chars = el.textContent.trim().length; if (chars >= CONFIG.minChars) break; }
+        continue;                                   // ToC, headings, notes, rules… before the intro: skip
+      }
+      if (!para) break;
+      anchor = el; chars += el.textContent.trim().length;
+      if (chars >= CONFIG.minChars) break;
+    }
+    // A Page with only short or structured opening content must still lose the above-title banner.
+    if (!anchor && isPage) anchor = scope.querySelector(':scope > p, :scope > blockquote') || scope.firstElementChild;
+    if (anchor) anchor.after(fig);
+    else if (isPage) scope.append(fig);
+    else return; // preserve the Post short-note behavior
+    document.body.classList.add('has-cinline');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+})();
+</script>
+<!-- 4. Root links in Preview: footer and author panel (no effect live) -->
+<script>
+(function () {
+  var TT = window.TT;
+  if (!TT) return;
+  var base = new URL(TT.home());
+  if (base.pathname === '/' || base.pathname === '') return;            // live: links are already right
+  if (!/\/$/.test(base.pathname)) base = new URL('./', base);
+  /* footer links, and the author panel's links and portrait */
+  Array.prototype.forEach.call(document.querySelectorAll('.footer a[href^="/"]:not([href^="//"]), .tt-intro a[href^="/"]:not([href^="//"]), .tt-intro img[src^="/"]:not([src^="//"])'), function (el) {
+    var attr = el.tagName === 'IMG' ? 'src' : 'href';
+    el.setAttribute(attr, new URL(el.getAttribute(attr).slice(1), base).href);
+  });
+})();
+</script>
+<!-- 5. Archive Page -->
+<script>
+/* Archive Page (needs div.tt-allposts): all posts by year from the listing, PER per page (0 = all). */
+(function () {
+  var TT = window.TT;
+  if (!TT) return;
+  var box = document.querySelector('.content__entry .tt-allposts');
+  if (!box) return;
+  var WORDS = 30, MAXPAGES = 50, PER = 12;
+
+  /* Walk the listing pages: one TT.cardInfo per card (cards without a date are skipped). */
+  function crawl(url, seen, list, n) {
+    if (!url || n >= MAXPAGES) return Promise.resolve(list);
+    return TT.get(url).then(function (h) {
+      if (!h) return list;
+      var d = TT.doc(h);
+      Array.prototype.forEach.call(d.querySelectorAll('.c-card'), function (c) {
+        var p = TT.cardInfo(c, url);
+        if (!p || p.iso === null || seen[p.url]) return;
+        seen[p.url] = 1;
+        list.push(p);
+      });
+      var next = d.querySelector('link[rel="next"]');
+      return crawl(next ? new URL(next.getAttribute('href'), url).href : null, seen, list, n + 1);
+    });
+  }
+
+  function pageUrl(n) { var u = new URL(location.href); if (n > 1) u.searchParams.set('page', n); else u.searchParams.delete('page'); return u.href; }
+  function tile(dir, n, posts) {
+    var first = posts[(n - 1) * PER], count = Math.min(PER, posts.length - (n - 1) * PER);
+    return TT.tile(dir, pageUrl(n), n, PER, count, first.cat, first.img);
+  }
+  function pager(posts, page, pages) {
+    var host = TT.el('div', 'tt-pagehost');
+    var nav = TT.el('nav', 'content__nav box');
+    nav.setAttribute('aria-label', 'Archive pages');
+    if (page > 1) nav.appendChild(tile('prev', page - 1, posts));
+    if (page < pages) nav.appendChild(tile('next', page + 1, posts));
+    host.appendChild(nav);
+    return host;
+  }
+
+  crawl(TT.home(), {}, [], 0).then(function (posts) {
+    if (!posts.length) return;
+    posts.sort(function (a, b) { return a.iso < b.iso ? 1 : a.iso > b.iso ? -1 : 0; });
+    var total = posts.length, pages = PER ? Math.ceil(total / PER) : 1;
+    var page = parseInt(new URLSearchParams(location.search).get('page'), 10) || 1;
+    if (page < 1 || page > pages) page = 1;
+    var slice = PER ? posts.slice((page - 1) * PER, page * PER) : posts;
+    var wrap = TT.el('div', 'tt-ap'), year = null, list = null;
+    slice.forEach(function (p) {
+      var y = p.iso.slice(0, 4) || '—';
+      if (y !== year) {
+        year = y;
+        var sec = TT.el('section', 'tt-ap__year');
+        sec.appendChild(TT.el('h2', null, y));
+        list = TT.el('ol', 'tt-ap__list');
+        sec.appendChild(list);
+        wrap.appendChild(sec);
+      }
+      var li = TT.el('li', 'tt-ap__item' + (p.cat ? ' tt-fc-' + p.cat : ''));
+      var t = TT.el('time', 'tt-ap__date', p.date);
+      t.setAttribute('datetime', p.iso);
+      var body = TT.el('div', 'tt-ap__body');
+      var a = TT.el('a', 'tt-ap__title', p.title);
+      a.href = p.url;
+      body.appendChild(a);
+      if (p.cat) body.appendChild(TT.el('span', 'tt-ap__cat', TT.cats[p.cat]));
+      li.appendChild(t);
+      li.appendChild(body);
+      list.appendChild(li);
+      TT.postInfo(p.url).then(function (d) {
+        if (!d.t) return;
+        body.appendChild(TT.el('p', 'tt-ap__excerpt', TT.trimWords(d.t, WORDS)));
+      });
+    });
+    var count = TT.el('p', 'tt-ap__count', total + ' posts' + (pages > 1 ? ' · page ' + page + ' of ' + pages : ''));
+    box.innerHTML = '';
+    box.appendChild(count);
+    box.appendChild(wrap);
+    if (pages > 1) {
+      var art = box.closest('.content');
+      var pg = pager(posts, page, pages);
+      if (art && art.parentNode) art.parentNode.insertBefore(pg, art.nextSibling); else box.appendChild(pg);
+    }
+    box.classList.add('is-built');
+  }).catch(function () {});
+})();
+</script>
+<!-- 6. Menus -->
+<script>
+/* Menus: Footer menu items join the top bar (li.nav-util); the footer gets one bar with both groups.
+   Runs before the theme's menu script, so the mobile menu includes them. */
+(function () {
+  var main = document.querySelector('.topbar .navbar__menu');
+  var subNav = document.querySelector('.footer > nav');
+  var sub = subNav && subNav.querySelector('.footer__nav');
+  if (!main) return;
+
+  function here(a) {
+    if (!a || !a.href) return false;
+    try {
+      var u = new URL(a.href, location.href), l = new URL(location.href);
+      return u.origin === l.origin && u.pathname.replace(/index\.html$/, '') === l.pathname.replace(/index\.html$/, '');
+    } catch (e) { return false; }
+  }
+  function item(link, cls) {
+    var li = document.createElement('li');
+    if (cls) li.className = cls;
+    var c = link.cloneNode(true);
+    c.removeAttribute('aria-haspopup');
+    li.appendChild(c);
+    if (here(link)) li.classList.add('active');
+    return li;
+  }
+
+  /* 1. top bar: utility group */
+  var util = [];
+  if (sub) {
+    Array.prototype.forEach.call(sub.children, function (li) {
+      var a = li.querySelector('a, span');
+      if (!a) return;
+      util.push(a);
+      main.appendChild(item(a, 'nav-util'));
+    });
+  }
+
+  /* 2. footer bar: both groups, top level only */
+  var footer = document.querySelector('.footer');
+  if (!footer) return;
+  var bar = document.createElement('nav');
+  bar.className = 'tt-footnav';
+  bar.setAttribute('aria-label', 'Site');
+  var left = document.createElement('ul'), right = document.createElement('ul');
+  left.className = 'tt-footnav__main';
+  right.className = 'tt-footnav__util';
+  Array.prototype.forEach.call(main.children, function (li) {
+    if (li.classList.contains('nav-util')) return;
+    var a = li.querySelector(':scope > a, :scope > span');
+    if (!a || a.tagName.toLowerCase() === 'span') return;
+    var n = item(a);
+    if (li.classList.contains('active')) n.classList.add('active');
+    left.appendChild(n);
+  });
+  util.forEach(function (a) { right.appendChild(item(a)); });
+  bar.appendChild(left);
+  if (right.children.length) bar.appendChild(right);
+  if (subNav) subNav.parentNode.replaceChild(bar, subNav);
+  else footer.insertBefore(bar, footer.firstChild);
+})();
+</script>
+<!-- 7. Listing pagination -->
+<script>
+/* Listing pagination as tiles: left "Previous page" = newer posts, right "Next page" = older. */
+(function () {
+  var TT = window.TT;
+  if (!TT) return;
+  var pag = document.querySelector('.pagination');
+  if (!pag) return;
+  var links = pag.querySelectorAll('a.pagination__item');
+  if (!links.length) return;
+
+  function pageNo(path) { var m = path.match(/\/page\/(\d+)\/?(?:index\.html)?$/); return m ? +m[1] : 1; }
+  var cur = pageNo(location.pathname);
+  var here = document.querySelectorAll('.c-card').length;
+
+  /* Number of posts on a listing page, and its first card's thumbnail and category. */
+  function info(href) {
+    return TT.get(href).then(function (h) {
+      if (!h) return null;
+      var cards = TT.doc(h).querySelectorAll('.c-card');
+      if (!cards.length) return null;
+      var c = TT.cardInfo(cards[0], href);
+      return { n: cards.length, img: c ? c.img : '', cat: c ? c.cat : null };
+    });
+  }
+
+  var targets = Array.prototype.map.call(links, function (a) {
+    var href = a.href;
+    return info(href).then(function (i) { return i ? { href: href, n: pageNo(new URL(href).pathname), i: i } : null; });
+  });
+  Promise.all(targets).then(function (t) {
+    t = t.filter(Boolean);
+    if (!t.length) return;
+    /* posts per page: every page but the last is full, so this page (page 1) or the newer neighbour tells us */
+    var newer = t.filter(function (x) { return x.n < cur; })[0];
+    var per = cur === 1 ? here : (newer ? newer.i.n : here);
+    t.sort(function (a, b) { return a.n - b.n; });
+    var host = TT.el('div', 'tt-pagehost ' + pag.className.replace(/\bpagination\b/, '').trim());
+    var nav = TT.el('nav', 'content__nav box');
+    nav.setAttribute('aria-label', 'Pages');
+    t.forEach(function (x) { nav.appendChild(TT.tile(x.n < cur ? 'prev' : 'next', x.href, x.n, per, x.i.n, x.i.cat, x.i.img)); });
+    host.appendChild(nav);
+    pag.parentNode.insertBefore(host, pag);
+    pag.classList.add('tt-replaced');
+  });
+})();
+</script>
+<!-- 8. Category navigation -->
+<script>
+/* Archive and tag pages: category bar; "All" = the Archive Page, found by its address. */
+(function () {
+  'use strict';
+  var TT = window.TT;
+  if (!TT) return;
+
+  var tagPage = document.querySelector('main.page--tag');
+  var archiveList = document.querySelector('main.page .content__entry .tt-allposts');
+  if (!tagPage && !archiveList) return;
+
+  var home = TT.home();
+  var tagsIndex = new URL('tags/', home);
+  var archiveLink = document.querySelector('nav a[href$="archive.html"]');
+  var archiveHref = archiveLink ? archiveLink.href : new URL('archive.html', home).href;
+
+  TT.get(tagsIndex.href).then(function (html) {
+    if (!html) return;
+    var doc = TT.doc(html);
+    var bySlug = {};
+    Array.prototype.forEach.call(doc.querySelectorAll('.page--tags .c-card__title a[href]'), function (a) {
+      var url = new URL(a.getAttribute('href'), tagsIndex.href);
+      if (url.origin !== location.origin) return;
+      var slug = url.pathname.replace(/\/$/, '').split('/').pop();
+      bySlug[slug] = url.href;
+    });
+    var slugs = Object.keys(TT.cats);
+    if (!slugs.some(function (s) { return bySlug[s]; })) return;   /* skip a missing tag, not the whole bar */
+
+    var nav = TT.el('nav', 'tt-category-nav');
+    nav.setAttribute('aria-label', 'Browse articles by category');
+    var context = TT.el('p', 'tt-category-nav__context');
+    context.appendChild(TT.el('strong', 'tt-category-nav__context-label', 'Categories'));
+    context.appendChild(TT.el('span', null, 'Browse by category. A post\'s colour shows its main category; other tags, such as Documentation, have their own pages.'));
+    nav.appendChild(context);
+    var list = TT.el('ul');
+    function item(label, url, active) {
+      var li = TT.el('li');
+      var a = TT.el('a', null, label);
+      a.href = url;
+      if (active) a.setAttribute('aria-current', 'page');
+      li.appendChild(a);
+      list.appendChild(li);
+    }
+    item('All', archiveHref, !!archiveList);
+    var path = location.pathname;
+    slugs.forEach(function (s) {
+      var url = bySlug[s];
+      if (!url) return;   /* no tag page for this category yet */
+      var base = new URL(url).pathname.replace(/\/?$/, '/');
+      var active = !!tagPage && (path === base || path === base.slice(0, -1) || path.indexOf(base + 'page/') === 0);
+      item(TT.cats[s], url, active);
+      if (active) tagPage.dataset.ttCategory = s;
+    });
+    nav.appendChild(list);
+    if (tagPage) tagPage.querySelector('.page__header').insertAdjacentElement('afterend', nav);
+    else archiveList.insertAdjacentElement('beforebegin', nav);
+  });
+})();
+</script>
+<!-- 9. CV index -->
+<script>
+/* CV index: replaces .tt-index (or a legacy #cv-toc) with a sticky two-level index from the headings.
+   Master CV pages index H2/H3, older CV pages H3/H4. */
+(function () {
+  var TT = window.TT;
+  if (!TT || !TT.toc) return;
+  var marker = document.querySelector('.content__entry .tt-index') || document.getElementById('cv-toc');
+  if (!marker) return;
+  var root = marker.closest('.content__entry') || document.querySelector('.content__entry');
+  /* label: the new snippet's text; else the old block's nav aria-label or its heading ("Index", "Índice"); else INDEX */
+  var old = marker.classList.contains('tt-index') ? null : marker.querySelector('[aria-label], h4');
+  var label = (old ? (old.getAttribute('aria-label') || old.textContent) : marker.textContent).trim() || 'INDEX';
+
+  var index = TT.el('details', 'cv-toc');
+  index.id = 'cv-toc';
+  var summary = TT.el('summary');
+  summary.setAttribute('aria-controls', 'cv-toc-nav');
+  var nav = TT.el('nav', 'cv-toc__nav');
+  nav.id = 'cv-toc-nav';
+  nav.setAttribute('aria-label', label);
+  index.appendChild(summary);
+  index.appendChild(nav);
+  marker.parentNode.replaceChild(index, marker);   /* first, so the old block's own heading is not indexed */
+
+  var levels = root.querySelector('.cv-section > h2') ? ['H2', 'H3'] : ['H3', 'H4'];
+  var toc = TT.toc(root, levels, '#cv-toc');
+  if (!toc.count) { index.parentNode.removeChild(index); return; }
+  summary.textContent = label + ' · ' + toc.count;
+  nav.appendChild(toc.el);
+
+  index.addEventListener('toggle', function () {
+    if (!index.open) return;
+    var a = toc.reveal();
+    if (a && a.scrollIntoView) a.scrollIntoView({ block: 'nearest' });
+  });
+  var raf = 0;
+  window.addEventListener('scroll', function () {
+    if (!index.open || raf) return;
+    raf = requestAnimationFrame(function () { raf = 0; toc.mark(); });
+  }, { passive: true });
+  document.addEventListener('click', function (event) {
+    if (!index.open) return;
+    var t = event.target;
+    if (!index.contains(t) || (t.closest && t.closest('#cv-toc a'))) index.open = false;
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && index.open) { index.open = false; summary.focus(); }
+  });
+})();
+</script>

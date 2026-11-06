@@ -1,0 +1,2522 @@
+/*-------------------------------------------------------+
+| CONRAM.IT · Typotechtural 1.61 · Custom CSS
+| Theme adaptation of Technews 3.2.0.0 by TidyCustoms
+| (tidycustoms.net) for Publii (getpublii.com)
++--------------------------------------------------------+
+| Authors: Rikard Malmborg, Claude (Anthropic),
+|          ChatGPT (OpenAI)
+| Web:     https://www.conram.it
+| Code:    https://github.com/ainz
+| Contact: dev [at] conram.it
++--------------------------------------------------------+
+| Copyright (C) 2026 Rikard Malmborg / CONRAM.IT
+| Code: MIT License · Site content: All rights reserved
+| Technews and Publii (C) their authors, own licences.
++--------------------------------------------------------*/
+
+/* 00 — Type system
+   - Headings: Exo, body: Public Sans. Both are set in Publii Theme Settings (Fonts), which loads them;
+     this CSS only uses var(--heading-font) / var(--body-font).
+   - Mono: Geist Mono (SIL OFL 1.1), self-hosted because Publii has only two font slots. Upload
+     geistmono.woff2 (copied from the TechNews theme folder, assets/dynamic/fonts/geistmono/) to Publii's
+     media files. The URL is relative to assets/css/style.css, so it works live and in the preview. */
+@font-face {
+  font-family: "Geist Mono"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url("../../media/files/geistmono.woff2") format("woff2");
+}
+:root { --tt-mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace; }
+/* TechNews sets weights with font-variation-settings ("wght"), which is inherited and beats font-weight
+   on variable fonts. Let font-weight decide, so the weights in this CSS are the ones you see. */
+body, body * { font-variation-settings: normal; }
+/* Small labels in the mono: date + tag boxes on cards and posts */
+.u-header__meta, .u-header__meta *, .c-card .u-tag, .c-card time { font-family: var(--tt-mono) !important; }
+
+/* 01 — Final Typotechtural palette and stock TechNews tokens */
+:root {
+  --tt-ebony: #242729;   /* Ebony: dark shell and ink */
+  --tt-shell: var(--tt-ebony);
+  /* Page ground "Night" #1F252C: every dark background surface uses --tt-page;
+     Ebony (--tt-shell) remains the ink on light surfaces. Must equal the banner's --cb-page (section 08). */
+  --tt-page: #1F252C;
+  /* Category colours: main tag = category = colour = banner topic. */
+
+  --cat-security:#D47F76;    --cat-security-tint:#F8D5D0;     /* red   (was brick)  */
+  --cat-compliance:#B7B9BA;  --cat-compliance-tint:#E3E4E4;   /* grey  (was silver) */
+  --cat-internet:#8FBFDB;    --cat-internet-tint:#D2E8F6;     /* blue  (was steel)  */
+  --cat-itsm:#9EC39E;        --cat-itsm-tint:#D9EAD9;         /* green (was grass)  */
+  --cat-career:#CBB588;      --cat-career-tint:#EEE4CF;       /* gold               */
+  --cat-tech:#72B9B9;        --cat-tech-tint:#D4EEEA;         /* teal  (new)        */
+  --cat-gaming:#B4A4D6;      --cat-gaming-tint:#E6E0F3;       /* lilac (new)        */
+  --cat-reserved:#E3A869;    --cat-reserved-tint:#F7E3CD;     /* amber (new, reserved, e.g. Cloud) */
+  /* Default for anything without a category (Pages without an fc-* marker, untagged posts/cards):
+     matte white (Ivory, the site's text colour on Night), not a category colour, never a banner. */
+  --tt-default: var(--tt-ivory);  --tt-default-tint: #F5F4F0;
+  --tt-ivory: #ebeae5;   /* Ivory: light text and neutral surfaces */
+  /* UI accents (not categories): gold for hover/active/current and the wordmark dot, silver for the footer panel. */
+  --tt-yellow: #cbb588;
+  --tt-yellow-light: #eee4cf;
+  /* Blue accent family. Gold (above) stays only for the wordmark dot and the Career category. */
+  --tt-blue: #0070DC;         /* rules, markers, logo hover (about 3:1 on Night: not for small text) */
+  --tt-blue-light: #5AA9FF;   /* small hover text and focus outlines on dark surfaces (about 6.3:1 on Night) */
+  --tt-blue-tint: #D6E6F7;    /* hover fill on Ivory surfaces */
+  --tt-navy: #003466;         /* menu bands (Ivory on Navy about 10:1) */
+  --tt-silver: #b7b9ba;
+  --tt-silver-light: #e5e6e6;
+
+  /* Aliases used by the existing homepage card rules. */
+  --muted: var(--tt-ivory);
+  --panel-dark: var(--tt-page);   /* submenus: a background, so Night */
+  --border-radius: 0;
+  /* Fonts: --body-font and --heading-font come from Theme Settings (body: Public Sans, headings: Exo).
+     Not overridden here any more: the theme setting is the one place to change them.
+     The mono (menu, tagline, labels, date boxes) is self-hosted: section 00. */
+  --logo-font: var(--heading-font);
+  --menu-font: var(--tt-mono);
+  --font-weight-normal: 400;
+  --font-weight-bold: 600;
+  --line-height: 1.6;
+  --letter-spacing: 0em;
+  --headings-weight: 600;
+  --headings-transform: none;
+  --headings-style: normal;
+  --headings-letter-spacing: 0em;
+  --headings-line-height: 1.2;
+
+  --white: var(--tt-ivory);
+  --black: var(--tt-ebony);
+  --dark: var(--tt-shell);
+  --gray: var(--tt-ivory);
+  --light: var(--tt-ivory);
+  --lighter: var(--tt-ivory);
+  --color: var(--tt-blue);
+  --color-rgb: 0, 112, 220;
+  --text-color: var(--tt-ivory);
+  --headings-color: var(--tt-ivory);
+  --logo-color: var(--tt-ivory);
+  --link-color: var(--tt-ivory);
+  --link-hover-color: var(--tt-blue-light);
+  --border-color-light: rgba(36, 39, 41, .2);
+  --badge-bg: var(--tt-ivory);
+  --badge-txt: var(--tt-ebony);
+}
+
+html { hyphens: auto; }
+/* Large screens at 100% scaling (e.g. 4K, DPR 1): grow the whole rem-based design gently,
+   1 rem = 16px up to ~2000px wide, ~24px at 3840px. Below 2000px the theme's font settings rule. */
+@media (min-width: 2000px) {
+  html { font-size: clamp(16px, calc(8px + .42vw), 24px); }
+}
+body {
+  color: var(--tt-ivory);
+  background: var(--tt-page);   /* plain: brick glow and gold specks removed 27 Oct (banner seam) */
+}
+
+/* Stock buttons use --white text on --color (yellow); keep Ebony text for contrast. */
+.btn,
+[type=button],
+[type=submit],
+button { color: var(--tt-ebony); }
+
+/* 02 — Stock masthead and homepage cards (four-family rotation) */
+/* The masthead is static: neutralise stock hide-on-scroll (.is-hidden fades and lifts it away). */
+.topbar,
+.topbar.is-visible,
+.topbar.is-hidden {
+  position: relative !important;
+  inset: auto !important;
+  display: block;
+  width: 100%;
+  padding: 0 max(1rem, calc((100vw - var(--main-col-width)) / 2));
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  opacity: 1 !important;
+  transform: none !important;
+}
+.topbar__inner {
+  display: flex;
+  height: auto;
+  max-width: var(--main-col-width);
+  min-height: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: .8rem;
+  margin: auto;
+  padding: 3.2rem 0 1.7rem;
+  border-bottom: 0;   /* one rule only: the menu row draws it */
+  text-align: center;
+}
+
+/* Publii text site name remains the accessible name; the pseudo-elements style it. */
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--tt-ivory) !important;
+  font-size: 0 !important;
+  letter-spacing: -.085em !important;
+  text-transform: none !important;
+}
+.logo > img { display: none !important; }
+.logo::before {
+  content: 'conram';
+  color: var(--tt-ivory);
+  font: 700 clamp(3.7rem, 10vw, 7rem) / .96 var(--heading-font);
+}
+.logo::after {
+  content: '.it';
+  background: linear-gradient(90deg, var(--tt-yellow) 0 .3em, var(--tt-ivory) .3em 100%);
+  background-clip: text;
+  color: transparent;
+  font: 700 clamp(3.7rem, 10vw, 7rem) / .96 var(--heading-font);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navbar {
+  position: relative;
+  z-index: 10;
+  display: block;
+  width: 100%;   /* .topbar__inner is already the frame; the old min(..., 100% - 2rem) added a second gutter */
+  max-width: var(--main-col-width);
+  margin: auto;
+  padding: .65rem 0;
+  border-bottom: 1px solid rgba(235,234,229,.24);
+}
+.navbar .navbar__menu { gap: clamp(1rem, 2.6vw, 2.4rem); }
+.navbar .navbar__menu li { font-size: .9rem; letter-spacing: .04em; }
+/* Theme Settings > Navbar height sets the height of the menu row (the menu is centred in it). */
+.navbar { display: flex; align-items: center; min-height: var(--navbar-height, 3.4rem); }
+.navbar .navbar__menu li a,
+.navbar .navbar__menu li span { color: var(--tt-ivory); }
+.navbar .navbar__menu li a:hover,
+.navbar .navbar__menu li span:hover { color: var(--tt-blue-light); }
+.navbar .navbar__submenu {
+  background: var(--panel-dark);
+  border: 1px solid rgba(235,234,229,.2);
+  box-shadow: 0 12px 28px rgba(36,39,41,.4);
+}
+.navbar__toggle { color: var(--tt-ivory) !important; }
+
+.main-content {
+  margin-top: 0 !important;   /* stock offset for a fixed header we do not use */
+  display: block;
+  width: min(var(--main-col-width), calc(100% - 2rem));   /* 1rem gutters, same as topbar, menu, posts and banner (was 4rem, 27 Oct) */
+  margin: 0 auto;
+  padding: 0;
+}
+/* Homepage: a real two-column grid. Which cards are "large" (span both columns) is decided
+   by Publii's Homepage layout setting; the selectors below mirror all four stock variants. */
+.main.l-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: none;
+  margin: 1.5rem auto 0;
+}
+.main.l-grid > :not(.c-card) { grid-column: 1 / -1; }
+
+.c-card {
+  margin: 0 !important;
+  overflow: hidden;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Every card: Feature Colour panel, text left, inset image right (as in the concept image). */
+.c-card .c-card__wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  align-items: stretch;
+  gap: 1.25rem;
+  height: 100%;
+  min-height: var(--card-small-height);   /* Theme Settings > Post list */
+  padding: 1.25rem;
+  background: var(--card-bg);
+  color: var(--tt-ebony);
+}
+.c-card .c-card__image {
+  grid-column: 2;
+  grid-row: 1;
+  height: auto !important;
+  min-height: calc(var(--card-small-height) - 2.5rem);
+  border-radius: 0;
+  background: var(--tt-page);   /* placeholder behind the card image */
+}
+.c-card .c-card__image img { width: 100%; height: 100%; object-fit: cover; }
+/* Card hover (whole card) = the card's own category tint at 25%, a 3% zoom and an underlined title,
+   instead of the theme's full-strength accent wash on the image. Without a category: an Ivory tint. */
+.c-card .c-card__image::after { background: linear-gradient(205deg, transparent 0%, var(--cat, var(--tt-ivory)) 100%); }
+.c-card .c-card__image img { transition: opacity 1s cubic-bezier(.215, .61, .355, 1), transform .35s ease-out; }   /* keeps the theme's lazy-load fade */
+.c-card:hover .c-card__image::after { opacity: .25; }
+.c-card:hover .c-card__image img { transform: scale(1.03); }
+.c-card:hover .c-card__title a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .18em; }
+@media (prefers-reduced-motion: reduce) { .c-card:hover .c-card__image img { transform: none; } }
+.c-card .u-header {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  padding: .5rem .5rem .5rem .75rem;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--tt-ebony);
+}
+.main.l-grid .c-card .c-card__title {
+  margin: .8rem 0;
+  font: 600 clamp(1.2rem, 1.7vw, 1.55rem) / 1.12 var(--heading-font);
+  letter-spacing: -.03em;
+}
+.c-card .c-card__title a { color: var(--tt-ebony); }
+
+/* Large cards (per the layout setting): wider panel, bigger title. One size for all large cards. */
+.main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .c-card__wrapper,
+.main.l-grid--2col-2-1 .c-card:nth-child(3n) .c-card__wrapper,
+.main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .c-card__wrapper,
+.main.l-grid--2col-4-1 .c-card:nth-child(5n) .c-card__wrapper { min-height: var(--card-large-height); grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+.main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .c-card__title,
+.main.l-grid--2col-2-1 .c-card:nth-child(3n) .c-card__title,
+.main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .c-card__title,
+.main.l-grid--2col-4-1 .c-card:nth-child(5n) .c-card__title {
+  font: 600 clamp(1.9rem, 3.4vw, 3rem) / 1.05 var(--heading-font);
+  letter-spacing: -.04em;
+}
+
+/* Card colour = the post's category (section 06). A card without a category is matte white. Each card carries its A and B tone. */
+.c-card .c-card__wrapper { --card-bg: var(--cat, var(--tt-default)); --card-bg-light: var(--cat-tint, var(--tt-default-tint)); }
+
+/* Date and tag share ONE box in the card's Feature Colour (B tone), Ebony text. */
+.c-card .u-header__meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .55rem;
+  width: max-content;
+  max-width: 100%;
+  padding: .28rem .55rem;
+  background: var(--card-bg-light, var(--tt-ivory));
+  color: var(--tt-ebony);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.c-card .u-header__meta time,
+.c-card .u-header__meta a {
+  color: var(--tt-ebony) !important;
+}
+
+/* Separator belongs to the date, NOT the category link. */
+.c-card .u-header__meta:has(.u-tag) time::after {
+  content: '·';
+  margin-left: .55rem;
+}
+
+.c-card__tag,
+.c-card .u-tag {
+  position: static;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+/* Only the category text receives an underline on hover. */
+.c-card .u-tag:hover {
+  background: transparent;
+  text-decoration: underline;
+}
+
+/* Mid widths: half-width cards stack image over text; large cards stay side by side. */
+@media (max-width: 1100px) {
+  .c-card .c-card__wrapper { grid-template-columns: 1fr; }
+  .c-card .c-card__image { grid-row: 1; grid-column: 1; min-height: 12rem; }
+  .c-card .u-header { grid-row: 2; grid-column: 1; }
+  .main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .c-card__wrapper,
+  .main.l-grid--2col-2-1 .c-card:nth-child(3n) .c-card__wrapper,
+  .main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .c-card__wrapper,
+  .main.l-grid--2col-4-1 .c-card:nth-child(5n) .c-card__wrapper { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+  .main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .c-card__image,
+  .main.l-grid--2col-2-1 .c-card:nth-child(3n) .c-card__image,
+  .main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .c-card__image,
+  .main.l-grid--2col-4-1 .c-card:nth-child(5n) .c-card__image { grid-row: 1; grid-column: 2; }
+  .main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .u-header,
+  .main.l-grid--2col-2-1 .c-card:nth-child(3n) .u-header,
+  .main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .u-header,
+  .main.l-grid--2col-4-1 .c-card:nth-child(5n) .u-header { grid-row: 1; grid-column: 1; }
+}
+
+@media (max-width: 720px) {
+  .topbar { padding: 0 1rem; }
+  .topbar__inner { padding: 2.7rem 0 1.2rem; }
+  .navbar { padding: .55rem 0; }
+  .main-content { width: calc(100% - 2rem); }
+  .main.l-grid { grid-template-columns: 1fr; margin-top: 1rem; }
+  .main.l-grid .c-card { grid-column: auto !important; }
+  .c-card .c-card__wrapper { grid-template-columns: 1fr !important; min-height: 0 !important; }
+  .c-card .c-card__image { grid-row: 1 !important; grid-column: 1 !important; min-height: 13rem; }
+  .c-card .u-header { grid-row: 2 !important; grid-column: 1 !important; }
+  .logo::before, .logo::after { font-size: 3.35rem; }
+}
+
+@media (max-width: 56.1875em) {
+  .navbar_mobile_overlay {
+    background: var(--tt-page) !important;
+    color: var(--tt-ivory) !important;
+    border-right: 1px solid rgba(235,234,229,.2);
+  }
+  .navbar_mobile_overlay .navbar__menu li a,
+  .navbar_mobile_overlay .navbar__menu li span { color: var(--tt-ivory) !important; }
+  .navbar_mobile_overlay .navbar__menu li a:hover,
+  .navbar_mobile_overlay .navbar__menu li span:hover { color: var(--tt-blue-light) !important; }
+  .navbar_mobile_overlay .navbar__submenu { background: var(--panel-dark) !important; }
+  .navbar_mobile_sidebar { background: var(--tt-page) !important; color: var(--tt-ivory) !important; }
+  .navbar_mobile_sidebar .navbar__menu li a,
+  .navbar_mobile_sidebar .navbar__menu li .is-separator { color: var(--tt-ivory) !important; }
+  .navbar_mobile_sidebar .navbar__menu li a:hover,
+  .navbar_mobile_sidebar .navbar__menu li .is-separator:hover { color: var(--tt-blue-light) !important; }
+  .navbar_mobile_sidebar .navbar__submenu { background: var(--panel-dark) !important; }
+  .navbar_mobile_sidebar .navbar__submenu li a { color: var(--tt-ivory) !important; }
+  /* Sidebar (the phone menu since 4 Nov): the current page is Ivory with the desktop dropdown's blue vertical
+     marker (text stays aligned), its parent is light blue, and an open submenu's caret points up. */
+  .navbar_mobile_sidebar .navbar__menu li.active > a { margin-left: -.75rem; padding-left: .75rem; color: var(--tt-ivory) !important; box-shadow: inset 2px 0 0 var(--tt-blue); }
+  .navbar_mobile_sidebar .navbar__menu li.active-parent > :is(a, .is-separator) { color: var(--tt-blue-light) !important; }
+  .navbar_mobile_sidebar .navbar__menu li:has(> .navbar__submenu_wrapper.is-active) > :is(a, .is-separator)::after { transform: rotate(180deg); }
+}
+
+/* Homepage author introduction — stock TechNews, Body Custom HTML. */
+body:not(.home-template) > .tt-intro { display: none !important; }
+body.home-template:has(> .tt-intro) { display: flex; flex-direction: column; }
+body.home-template > :not(.cbanner):not(.topbar):not(.tt-intro):not(.main-content) { order: 4; }
+body.home-template > .cbanner { order: 0; }
+body.home-template > .topbar { order: 1; margin-bottom: 0 !important; }
+body.home-template > .tt-intro { order: 2; }
+body.home-template > .main-content { order: 3; }
+.tt-intro, .tt-intro *, .tt-intro *::before, .tt-intro *::after { box-sizing: border-box; }
+.tt-intro {
+  --ivory: var(--tt-ivory);
+  --muted: #a9afb5;
+  --rule: rgba(235, 234, 229, .17);
+  --security: var(--cat-security);
+  --compliance: var(--cat-compliance);
+  --internet: var(--cat-internet);
+  --itsm: var(--cat-itsm);
+  --career: var(--cat-career);
+  --tech: var(--cat-tech);
+  --gaming: var(--cat-gaming);
+}
+.tt-intro {
+      margin: 4px 0 12px;
+      padding-inline: 12px;
+
+      border: 1px solid rgba(235, 234, 229, .14);
+      border-top-color: rgba(235, 234, 229, .18);
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .tt-intro__details {
+      padding: 0;
+    }
+
+    /* ==========================================================
+       05. COLLAPSIBLE HEADING
+       ========================================================== */
+
+    .tt-intro__summary {
+      min-height: 45px;
+
+      padding: 11px 2px;
+
+      cursor: pointer;
+      list-style: none;
+
+      display: flex;
+
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 16px;
+    }
+
+    .tt-intro__summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .tt-intro__summary::marker {
+      content: "";
+    }
+
+    .tt-intro__summary:focus-visible {
+      outline: 2px solid var(--tt-blue-light);
+      outline-offset: 3px;
+    }
+
+    .tt-intro__label {
+      color: var(--ivory);
+
+      font-size: 0.85rem;
+      font-weight: 600;
+
+      letter-spacing: 0.055em;
+    }
+
+    .tt-intro__label b {
+      color: var(--muted);
+
+      font-weight: 400;
+
+      padding: 0 5px;
+    }
+
+    .tt-intro__toggle {
+      color: var(--muted);
+
+      font-size: 0.69rem;
+
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .tt-intro__chevron {
+      display: inline-block;
+
+      width: 7px;
+      height: 7px;
+
+      margin-left: 9px;
+
+      vertical-align: 2px;
+
+      border-right: 1.4px solid var(--ivory);
+      border-bottom: 1.4px solid var(--ivory);
+
+      transform: rotate(45deg);
+    }
+
+    .tt-intro__details[open] .tt-intro__chevron {
+      transform: translateY(4px) rotate(225deg);
+    }
+
+    /* ==========================================================
+       06. EXPANDED LAYOUT
+
+       Copy fills the available left area beside a narrower
+       right reservation (the portrait). A footer row with
+       the links and the brick strip spans both columns below.
+       ========================================================== */
+
+    .tt-intro__expanded {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .tt-intro__content {
+      position: relative;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        235px;
+
+      column-gap: 28px;
+      row-gap: 0;          /* The footer row sets its own distance (section 09) */
+
+      align-items: start;
+
+      padding: 12px 2px 26px;
+
+    }
+
+    /* ==========================================================
+       07. EDITORIAL TEXT
+
+       The text uses the full space before the reserved image area.
+       Wording and text alignment are edited in Body Custom HTML.
+       The H2 and paragraphs use the site font settings.
+       ========================================================== */
+
+    .tt-intro__text {
+      position: relative;
+      z-index: 2;
+
+      min-width: 0;
+    }
+
+    .tt-intro__heading {
+      margin: 0 0 11px;
+
+      color: var(--ivory);
+      font-weight: var(--headings-weight);
+    }
+
+    .tt-intro__text p {
+      margin: 0 0 9px;
+
+      color: #c9cdd0;
+
+      hyphens: manual;
+
+      overflow-wrap: break-word;
+    }
+
+    /* ==========================================================
+   09. FOOTER ROW AND INTRODUCTION LINKS
+   Links on the left, the brick strip (section 13) fills the
+   rest of the row to the right edge; both share the bottom line.
+   ========================================================== */
+
+.tt-intro__foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+  margin-top: 28px;
+}
+
+.tt-intro__links {
+  flex: 0 1 auto;        /* may shrink and wrap on narrow screens */
+  min-width: 0;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tt-intro__links a,
+.tt-portrait__link {
+  color: var(--ivory);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.tt-intro__links a:hover,
+.tt-portrait__link:hover {
+  color: var(--tt-blue-light);
+}
+
+.tt-intro__links a:focus-visible,
+.tt-portrait__link:focus-visible {
+  outline: 2px solid var(--tt-blue-light);
+  outline-offset: 4px;
+}
+    /* ==========================================================
+       10. AUTHOR AREA
+
+       Portrait and caption in the reserved right column.
+       ========================================================== */
+
+    .tt-intro__aside {
+      position: relative;
+      z-index: 1;
+
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      gap: 16px;
+
+      width: 235px;
+      max-width: 100%;
+    }
+
+    /* ==========================================================
+       11. AUTHOR PORTRAIT
+       ========================================================== */
+
+    .tt-portrait {
+      position: relative;
+      z-index: 3;
+
+      width: 154px;
+      max-width: 100%;
+
+      margin: 0 0 0 auto;
+    }
+
+    .tt-portrait img {
+      display: block;
+
+      width: 154px;
+      height: 154px;
+
+      max-width: 100%;
+
+      object-fit: cover;
+      object-position: center 40%;
+
+      border: 1px solid var(--rule);
+    }
+
+    /* ==========================================================
+       12. PORTRAIT CAPTION
+
+       The caption is placed directly below the image.
+
+       No background box is necessary because the brickwork
+       now starts BELOW the entire portrait/caption area.
+
+       The link remains part of the figure's normal flow.
+       ========================================================== */
+
+    .tt-portrait figcaption {
+      display: block;
+
+      width: 154px;
+      max-width: 100%;
+
+      padding: 9px 0 0;
+
+      margin: 0;
+
+      line-height: 1.2;
+
+      background: none;
+    }
+
+    .tt-portrait__link {
+      display: inline-block;
+
+      font-size: 0.59rem;
+      letter-spacing: 0.055em;
+
+      white-space: nowrap;
+    }
+
+    /* ==========================================================
+       13. BRICK STRIP
+
+       Two running-bond courses, 1200 x 25 units, drawn in the Body
+       field. The strip is anchored at the right edge (straight edge;
+       every other course starts with a closer) and clipped on the
+       left by the space the links leave, so it fits every width
+       without scaling. The left 30% fades in.
+       ========================================================== */
+
+    .tt-bond {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 25px;
+      overflow: hidden;
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 30%);
+      mask-image: linear-gradient(to right, transparent 0, #000 30%);
+    }
+
+    .tt-bond svg {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: block;
+      opacity: 0.9;
+    }
+
+    /* ==========================================================
+       14. BRICK CATEGORY COLOURS
+       ========================================================== */
+
+    .tt-brick--security {
+      fill: var(--security);
+    }
+
+    .tt-brick--compliance {
+      fill: var(--compliance);
+    }
+
+    .tt-brick--internet {
+      fill: var(--internet);
+    }
+
+    .tt-brick--itsm {
+      fill: var(--itsm);
+    }
+
+    .tt-brick--career {
+      fill: var(--career);
+    }
+
+    .tt-brick--tech {
+      fill: var(--tech);
+    }
+
+    .tt-brick--gaming {
+      fill: var(--gaming);
+    }
+
+    /* ==========================================================
+       16. RESPONSIVE ADJUSTMENTS
+
+       The brick strip is decorative and disappears below 740px
+       (rule after section 16). The portrait and caption remain.
+       ========================================================== */
+
+    @media (max-width: 900px) {
+
+      .tt-intro__content { grid-template-columns: minmax(0, 1fr) 180px; column-gap: 24px; }
+      .tt-intro__aside { width: 180px; }
+
+    }
+
+    @media (max-width: 700px) {
+
+      .tt-intro { padding-inline: 8px; }
+
+      .tt-intro__content {
+        grid-template-columns:
+          minmax(0, 1fr)
+          94px;
+
+        column-gap: 14px;
+
+
+        padding: 8px 2px 22px;
+      }
+
+      .tt-intro__aside {
+        width: 94px;
+      }
+
+      .tt-portrait {
+        width: 94px;
+      }
+
+      .tt-portrait img {
+        width: 94px;
+        height: 94px;
+      }
+
+      .tt-portrait figcaption {
+        width: 94px;
+      }
+
+      .tt-portrait__link {
+        white-space: normal;
+        line-height: 1.4;
+      }
+
+      .tt-intro__text p {
+        font-size: 0.82rem;
+      }
+
+      .tt-intro__label {
+        font-size: 0.76rem;
+      }
+
+      .tt-intro__toggle {
+        font-size: 0.65rem;
+      }
+
+      .tt-intro__links {
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 390px) {
+
+      .tt-intro__content {
+        grid-template-columns: 1fr;
+      }
+
+      .tt-intro__aside {
+        width: 100%;
+      }
+
+      .tt-portrait {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        width: 100%;
+      }
+
+      .tt-portrait img {
+        flex: 0 0 84px;
+
+        width: 84px;
+        height: 84px;
+      }
+
+      .tt-portrait figcaption {
+        width: auto;
+
+        padding: 0;
+      }
+
+      .tt-portrait__link {
+        white-space: nowrap;
+      }
+    }
+body.home-template > .tt-intro {
+  width: min(var(--main-col-width), calc(100% - 2rem));
+  margin: 8px auto 12px;
+}
+.tt-intro__details:not([open]) .tt-intro__action--collapse,
+.tt-intro__details[open] .tt-intro__action--expand { display: none; }
+.tt-intro__posts-anchor { display: block; height: 0; }
+/* Bricks disappear before the image and copy become too narrow together. */
+@media (max-width: 740px) { .tt-intro .tt-bond { display: none; } }
+@media (min-width: 701px) and (max-width: 740px) {
+  .tt-intro__content { grid-template-columns: minmax(0, 1fr) 150px; }
+  .tt-intro__aside { width: 150px; }
+  .tt-portrait, .tt-portrait figcaption { width: 128px; }
+  .tt-portrait img { width: 128px; height: 128px; }
+}
+
+
+/* 03 — Stock Post and Page reading surfaces and image/title geometry */
+.main.post,
+.main.page {
+  display: block;
+  width: 100%;   /* .main-content already sets the frame and the 1rem gutters (was a second gutter, 27 Oct) */
+  max-width: var(--main-col-width);
+  margin: 1.25rem auto 4rem;
+}
+/* Default colour: matte white for a post without a category and a Page without an fc-* marker.
+   Categories and markers override it in section 06. */
+.main.post > .content,
+.main.page > .content {
+  --tt-accent: var(--cat, var(--tt-default));
+  --tt-accent-light: var(--cat-tint, var(--tt-default-tint));
+  --tt-reading: var(--cat-tint, var(--tt-default-tint));
+}
+/* Reading column: the panel spans the full frame, text sits in a centred measure. */
+.main.post > .content,
+.main.page > .content { --tt-measure: 44rem; --tt-gutter: max(clamp(1.25rem, 3.5vw, 2.5rem), calc((100% - var(--tt-measure)) / 2)); }
+.main.post > .content,
+.main.page > .content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--tt-page);
+  color: var(--tt-ivory);
+}
+.main.post .content__featured-image,
+.main.page .content__featured-image {
+  position: relative;
+  width: 100%;
+  height: clamp(14.375rem, 34vw, 29.375rem);
+  margin: 0;
+  overflow: hidden;
+  background: var(--tt-page);
+  border: 0;
+  border-radius: 0;
+}
+.main.post .content__featured-image > img,
+.main.page .content__featured-image > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.main.post .content__featured-image > figcaption,
+.main.page .content__featured-image > figcaption {
+  top: 1rem;
+  right: 1rem;
+  bottom: auto;   /* bottom edge is covered by the cut-in title panel */
+  color: var(--tt-ivory);
+  background: rgba(31,37,44,.72);   /* Night */
+  text-shadow: none;
+}
+
+/* Title panel: full width, flush under the image (it overlaps the image by 50px, which reads as
+   flush because panel and image are equally wide). The cut-in variant was tried and dropped on
+   26 Oct: with per-post Feature Colours on an Ebony page the notch never reads as negative space. */
+.main.post .content__featured-image + .content__header,
+.main.page .content__featured-image + .content__header { margin-top: -50px; }
+.main.post .content__header,
+.main.page .content__header {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 1.45rem var(--tt-gutter) 1.25rem;
+  background: var(--tt-accent);
+  color: var(--tt-shell);
+}
+.main.post .content__header h1,
+.main.page .content__header h1 {
+  max-width: 52rem;
+  color: var(--tt-shell);
+  font: 600 clamp(2rem, 3.4vw, 3.15rem) / 1.08 var(--heading-font);
+  letter-spacing: -.035em;
+}
+.main.post .content__header .u-header__meta,
+.main.page .content__header .u-header__meta {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  width: max-content;
+  max-width: 100%;
+  margin-top: .9rem;
+  padding: .28rem .55rem;
+  background: var(--tt-accent-light);
+  color: var(--tt-shell);
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.main.post .content__header .u-header__meta a,
+.main.page .content__header .u-header__meta a,
+.main.post .content__header .u-tag,
+.main.page .content__header .u-tag { color: var(--tt-shell) !important; }   /* beats stock per-tag --badge-txt */
+.main.post .content__header .u-tag,
+.main.page .content__header .u-tag {
+  display: inline-block;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.main.post .content__entry,
+.main.page .content__entry {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 1.45rem var(--tt-gutter) 2.5rem;
+  background: var(--tt-reading);
+  background: linear-gradient(180deg in oklab, var(--tt-reading) 0, var(--tt-reading) 900px, var(--tt-default-tint) 1800px);
+  color: var(--tt-shell);
+  font: 1.04rem / 1.75 var(--body-font);
+}
+.main.post .content__entry > :first-child,
+.main.page .content__entry > :first-child { margin-top: 0; }
+.main.post .content__entry h2,
+.main.post .content__entry h3,
+.main.post .content__entry h4,
+.main.page .content__entry h1,
+.main.page .content__entry h2,
+.main.page .content__entry h3,
+.main.page .content__entry h4,
+.main.page .content__entry h5 {
+  max-width: 58ch;
+  color: var(--tt-shell);
+  font-family: var(--heading-font);
+  letter-spacing: -.025em;
+}
+.main.post .content__entry p,
+.main.post .content__entry ul,
+.main.post .content__entry ol,
+.main.post .content__entry blockquote,
+.main.post .content__entry pre,
+.main.post .content__entry table,
+.main.page .content__entry p,
+.main.page .content__entry ul,
+.main.page .content__entry ol,
+.main.page .content__entry blockquote,
+.main.page .content__entry pre,
+.main.page .content__entry table { max-width: 72ch; }
+/* Links: Ebony with a quiet underline on every Feature Colour. The :not() chain matches stock specificity. */
+.main.post .content__entry a:not(.btn):not([type=button]):not([type=submit]):not(button),
+.main.page .content__entry a:not(.btn):not([type=button]):not([type=submit]):not(button) {
+  color: var(--tt-ebony);
+  text-decoration: underline;
+  text-decoration-color: rgba(36,39,41,.45);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+}
+.main.post .content__entry a:not(.btn):not([type=button]):not([type=submit]):not(button):hover,
+.main.page .content__entry a:not(.btn):not([type=button]):not([type=submit]):not(button):hover {
+  text-decoration-color: var(--tt-ebony);
+  text-decoration-thickness: 2px;
+}
+/* Shared horizontal Table of Contents for authored Publii TOCs on Posts and Pages. */
+:is(.main.post, .main.page) .content__entry .post__toc {
+  max-width: var(--tt-measure);
+  margin: 0 0 1.75rem;
+  padding: .7rem 0;
+  border-block: 1px solid var(--tt-blue);
+  color: var(--tt-shell);
+}
+:is(.main.post, .main.page) .content__entry .post__toc h3 {
+  margin: 0 0 .35rem;
+  color: var(--tt-shell);
+  font: 600 .72rem / 1.3 var(--tt-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+:is(.main.post, .main.page) .content__entry .post__toc ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+:is(.main.post, .main.page) .content__entry .post__toc ul ul { display: contents; }
+:is(.main.post, .main.page) .content__entry .post__toc li {
+  display: contents;
+  padding: 0;
+  counter-increment: none;
+}
+:is(.main.post, .main.page) .content__entry .post__toc li::before { content: none; }
+:is(.main.post, .main.page) .content__entry .post__toc a:not(.btn):not([type=button]):not([type=submit]):not(button) {
+  display: inline-block;
+  padding: .25rem .45rem;
+  color: var(--tt-shell);
+  text-decoration: none;
+}
+:is(.main.post, .main.page) .content__entry .post__toc a::before {
+  content: "·";
+  display: inline-block;
+  margin: 0 .7rem 0 .1rem;
+  color: var(--tt-blue);
+}
+:is(.main.post, .main.page) .content__entry .post__toc > ul > li:first-child > a::before { content: none; }
+:is(.main.post, .main.page) .content__entry .post__toc a:not(.btn):not([type=button]):not([type=submit]):not(button):hover { text-decoration: underline; }
+:is(.main.post, .main.page) .content__entry .post__toc a:not(.btn):not([type=button]):not([type=submit]):not(button):focus-visible {
+  outline: 2px solid var(--tt-blue);
+  outline-offset: 2px;
+  text-decoration: underline;
+}
+.main.post .content__entry blockquote,
+.main.page .content__entry blockquote {
+  position: relative;
+  border-left: 3px solid var(--tt-accent);
+  padding: .75rem 1.25rem .35rem 2.5rem;
+  color: var(--tt-shell);
+  font-style: italic;
+}
+.main.post .content__entry blockquote::before,
+.main.page .content__entry blockquote::before {
+  position: absolute;
+  top: .28rem;
+  left: .32rem;
+  display: block;
+  height: auto;
+  margin: 0;
+  color: var(--tt-accent);
+  font-size: 2.6rem;
+  font-weight: 600;
+  line-height: 1;
+  content: '“';
+}
+.main.post .content__entry pre,
+.main.page .content__entry pre {
+  overflow-x: auto;
+  padding: 1rem;
+  background: var(--tt-ivory);
+  color: var(--tt-shell);
+}
+.main.post .content__entry code,
+.main.page .content__entry code { color: var(--tt-shell); }
+.main.post .content__entry table,
+.main.page .content__entry table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--tt-shell);
+}
+.main.post .content__entry th,
+.main.post .content__entry td,
+.main.page .content__entry th,
+.main.page .content__entry td {
+  border: 1px solid rgba(36,39,41,.24);
+  padding: .5rem .75rem;
+}
+.main.post .content__footer,
+.main.page .content__footer {
+  width: 100%;
+  margin: 0;
+  padding: 1rem 0 .5rem;
+  background: var(--tt-default-tint);
+  color: var(--tt-shell);
+}
+
+@media (max-width: 720px) {
+  .main.post,
+  .main.page { width: 100%; margin: .75rem auto 3rem; }
+  .main.post .content__featured-image,
+  .main.page .content__featured-image { height: clamp(13.75rem, 60vw, 23.75rem); }
+  .main.post .content__featured-image + .content__header,
+  .main.post .content__header,
+  .main.page .content__header { padding: 1.15rem 1rem 1rem; }
+  .main.post .content__featured-image + .content__header,
+  .main.page .content__featured-image + .content__header { margin-top: -34px; }
+  .main.post > .content,
+  .main.page > .content { --tt-gutter: 1rem; }
+  .main.post .content__header h1,
+  .main.page .content__header h1 { font-size: clamp(1.8rem, 8vw, 2.7rem); }
+  .main.post .content__entry,
+  .main.page .content__entry { padding: 1.15rem 1rem 1.8rem; font-size: 1rem; }
+}
+
+/* 35 — Text flow in Posts and Pages. One rhythm for lists, images in text and captions.
+   - Lists: one indent and one spacing for Posts and Pages, ul and ol alike. Markers sit
+     inside a 2em indent; text starts 2em in from the paragraph edge, nested lists another 2em.
+     Items .45em apart; an item that carries a sub-list, or
+     starts with a bold/italic lead line followed by a line break, gets paragraph spacing (.9em).
+   - Images in text: below 44rem of content width, keep the non-floating block treatment. At or above
+     that content width, only right-aligned inline figures regain the stock float, 50% image limit and
+     stock margins. This leaves about 19rem for text at the threshold and retains v23 phone protection.
+   - Figures were inline-block (stock), so their margins did not collapse: 70px before a heading,
+     ~67px between two images. Block display makes them collapse like every other block.
+   - Captions in text were Ivory on a light surface (figcaption uses --gray, which the palette maps
+     to Ivory). Same treatment as the featured-image caption. */
+
+/* Lists */
+.main.post .content__entry > :is(ul, ol):not(.references),
+.main.page .content__entry > :is(ul, ol):not(.references),
+.main.page .content__entry > [class*="fc-"] > :is(ul, ol):not(.references) {
+  margin: .7em 0 0;
+  padding-left: 2em;
+}
+:is(.main.post .content__entry, .main.page .content__entry, .main.page .content__entry > [class*="fc-"]) > :is(ul, ol):not(.references) li {
+  margin: 0;
+  padding: 0;
+}
+:is(.main.post .content__entry, .main.page .content__entry, .main.page .content__entry > [class*="fc-"]) > :is(ul, ol):not(.references) li + li {
+  margin-top: .45em;
+}
+:is(.main.post .content__entry, .main.page .content__entry, .main.page .content__entry > [class*="fc-"]) > :is(ul, ol):not(.references) li:has(> :is(ul, ol)) + li,
+:is(.main.post .content__entry, .main.page .content__entry, .main.page .content__entry > [class*="fc-"]) > :is(ul, ol):not(.references) li + li:has(> :is(strong, b, em):first-child > br, > :is(strong, b, em):first-child + br) {
+  margin-top: .9em;
+}
+:is(.main.post .content__entry, .main.page .content__entry, .main.page .content__entry > [class*="fc-"]) > :is(ul, ol):not(.references) li > :is(ul, ol) {
+  margin: .35em 0 0;
+  padding-left: 2em;
+}
+:is(.main.post .content__entry, .main.page .content__entry, .main.page .content__entry > [class*="fc-"]) > :is(ul, ol):not(.references) li > p {
+  margin: 0;
+}
+
+/* Inline-image flow: use the actual Post/Page reading width for the responsive decision. */
+.main.post .content__entry:has(figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full)),
+.main.page .content__entry:has(figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full)) {
+  container-name: tt-inline-image-flow;
+  container-type: inline-size;
+}
+/* Inline images stay blocks below the width threshold; featured images and wide/full figures are excluded. */
+.main.post .content__entry figure.post__image:not(.post__image--wide):not(.post__image--full),
+.main.page .content__entry figure.post__image:not(.post__image--wide):not(.post__image--full) {
+  display: block;
+  float: none;
+  width: fit-content;
+  max-width: min(100%, 72ch);
+  margin: 2rem auto;
+}
+/* Preserve editor-selected right alignment while the content column is too narrow to float safely. */
+.main.post .content__entry figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full),
+.main.page .content__entry figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full) {
+  margin-left: auto;
+  margin-right: 0;
+}
+/* Restore stock TechNews wrapping only when the reading column leaves a comfortable text measure. */
+@container tt-inline-image-flow (min-width: 44rem) {
+  .main.post .content__entry figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full),
+  .main.page .content__entry figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full) {
+    float: right;
+    max-width: 50%;
+    margin: 0 0 2.6714285714rem 2.6714285714rem;
+  }
+}
+.main.post .content__entry figure.post__image:not(.post__image--wide):not(.post__image--full) > img,
+.main.page .content__entry figure.post__image:not(.post__image--wide):not(.post__image--full) > img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+.main.post .content__entry figure.post__image > figcaption,
+.main.page .content__entry figure.post__image > figcaption {
+  margin-top: .5rem;
+  color: var(--tt-shell);
+  opacity: .8;
+  font-size: .8rem;
+  line-height: 1.35;
+  text-align: left;
+}
+
+/* Empty sidebar wrapper (ads are off): it rendered 78px of padding between page and footer. */
+.main-content > .sidebar:empty { display: none; }
+
+/* 04 — Retained legacy CV, print, footnote and reference rules */
+ul { margin: .4rem 0 .6rem; padding-left: 1.2rem; }
+li { margin: .2rem 0; }
+li ul { margin-top: .2rem; }
+
+/* Compact 12px tables from live dropped: the live selectors never matched TechNews,
+   and block/overflow tables caused narrow mid-page scrollbars. Tables use section 03 styling. */
+
+.cv-layout { font-size: .98rem; line-height: 1.45; }
+.cv-layout h3 { margin-top: 1.1rem; }
+.cv-layout h4 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.28;
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+}
+.cv-layout .cv-desc > :first-child { margin-top: 0; }
+.cv-layout p { margin: 0 0 .5rem; }
+.cv-layout ul,
+.cv-layout ol { margin: .35rem 0 .45rem 1.1rem; }
+.cv-layout li { margin: .15rem 0; }
+.cv-layout .cv-list { display: grid; gap: .35rem; }
+.cv-layout .cv-item {
+  display: grid;
+  grid-template-columns: 16ch 1fr;
+  column-gap: 1.1rem;
+  align-items: start;
+  padding: .55rem .75rem;
+  border: 1px solid #e8e8e8;
+  border-radius: .5rem;
+  background: #f6f9fb;
+}
+.cv-layout .cv-item.full { grid-template-columns: 1fr; }
+.cv-layout .cv-item.full .cv-date { display: none; }
+.cv-layout .cv-item.full .cv-desc { grid-column: 1 / -1; }
+.cv-layout .cv-list > .cv-item:nth-child(odd) { background: #edf4f8; }
+.cv-layout .cv-date,
+.cv-layout .cv-label { font-weight: 700; white-space: nowrap; }
+.cv-layout .cv-desc strong { font-weight: 700; font-variation-settings: 'wght' 700; }
+/* Master CV parts (Page content built from the Word Master CV). */
+.cv-layout .cv-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1.5rem;
+  align-items: start;
+  margin: 0 0 1.5rem;
+  padding: 0 0 1rem;
+  border-bottom: 1px solid rgba(36, 39, 41, .15);
+}
+.cv-layout .cv-intro > * { grid-column: 1; }
+.cv-layout .cv-intro p { margin: 0 0 .35rem; }
+.cv-layout .cv-portrait {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  width: 160px;
+  height: 160px;
+  margin: 0;
+  object-fit: cover;
+  border: 1px solid rgba(36, 39, 41, .2);
+}
+.cv-layout .cv-name { font-size: 1.15rem; line-height: 1.35; }
+.cv-layout .cv-updated { font: 500 .72rem/1.4 var(--tt-mono); opacity: .65; }
+.cv-layout .cv-section { margin: 0 0 1.75rem; }
+/* Master CV headings (.cv-doc pages only; old CV pages keep the h3/h4 rules above) */
+.cv-layout.cv-doc .cv-title { margin: 0 0 1.2rem; text-align: center; font: 600 1.35rem/1.3 var(--heading-font); }
+.cv-layout.cv-doc h2 {
+  margin: 2.6rem 0 .6rem;
+  padding-bottom: .35rem;
+  border-bottom: 2px solid var(--tt-shell);
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+.cv-layout.cv-doc .cv-section:first-of-type h2 { margin-top: 1.2rem; }
+/* section marker: the square belt (bold) drawn as SVG in ebony; same on every system, vector in PDF, hidden from screen readers */
+.cv-layout.cv-doc h2::before {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='119 65.96 147.4 147.4' width='22' height='22'%3E%3Cg transform='rotate(-34.8015 192.82 139.52)'%3E%3Cg fill='none' stroke='%23242729' stroke-width='10'%3E%3Ccircle cx='126.12' cy='151.52' r='59.52'/%3E%3Ccircle cx='192.66' cy='139.66' r='59.52'/%3E%3Ccircle cx='259.52' cy='127.52' r='59.52'/%3E%3C/g%3E%3Cg fill='%23242729'%3E%3Ccircle cx='134.063' cy='150.104' r='16'/%3E%3Ccircle cx='192.66' cy='139.66' r='16'/%3E%3Ccircle cx='251.222' cy='129.027' r='16'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") / "";
+  margin-right: .5em;
+  vertical-align: -2px;
+}
+.cv-layout.cv-doc h3 {
+  margin: 1.9rem 0 .4rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(36, 39, 41, .18);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.cv-layout.cv-doc h2 + h3 { margin-top: .9rem; padding-top: 0; border-top: 0; }
+.cv-layout.cv-doc h4 {
+  margin: 1.1rem 0 .3rem;
+  font: 600 .72rem/1.3 var(--tt-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .7;
+  transform: none;
+}
+.cv-layout .cv-role {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .2rem 1rem;
+  margin: .5rem 0 .55rem;
+}
+.cv-layout .cv-years { font: 600 .8rem/1.5 var(--tt-mono); white-space: nowrap; opacity: .75; }
+.cv-layout .cv-group {
+  margin: 1.4rem 0 .3rem;
+  padding-top: .5rem;
+  border-top: 1px solid rgba(36, 39, 41, .15);
+  font: 600 .72rem/1.3 var(--tt-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+@media (max-width: 600px) {
+  .cv-layout .cv-portrait { width: 96px; height: 96px; }
+}
+@media (max-width: 640px) {
+  .cv-layout .cv-item { grid-template-columns: 1fr; }
+  .cv-layout .cv-date { margin-bottom: .15rem; }
+}
+
+@media print {
+  .topbar, .navbar, .logo, .site-logo, .logo-link, .sidebar, .footer,
+  .pcb, .cbanner, .content__nav { display: none !important; }
+  @page { margin: 10mm; }
+  html, body { font-size: 10.5pt; line-height: 1.35; color: #000 !important; background: #fff !important; }
+  .cv-layout { font-size: 10.2pt; line-height: 1.35; }
+  .cv-layout h3 { font-size: 13pt; line-height: 1.22; margin: 0 0 5pt; page-break-after: avoid; }
+  .cv-layout h4 { font-size: 11.5pt; line-height: 1.22; margin: 0 0 4pt; transform: translateY(-1pt); }
+  .cv-layout .cv-item { padding: .45rem .6rem; border-color: #ddd; background: #fff !important; page-break-inside: avoid; }
+  .cv-layout .cv-list > .cv-item:nth-child(odd) { background: #fff !important; }
+  .cv-layout .cv-desc ul { margin: .2rem 0 .15rem 1rem; }
+  .cv-layout .cv-desc li { margin: .06rem 0; }
+  .cv-layout.cv-doc h2 { font-size: 13pt; margin: 10pt 0 4pt; page-break-after: avoid; }
+  .cv-layout.cv-doc h3 { font-size: 11.5pt; margin: 8pt 0 3pt; padding-top: 5pt; page-break-after: avoid; }
+  .cv-layout.cv-doc h4 { font-size: 7.5pt; margin: 5pt 0 2pt; page-break-after: avoid; }
+  .main-content, .content, main, .main, .content__entry {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
+
+.footnote {
+  padding-right: 2px;
+  padding-left: 2px;
+  color: #005bbb;
+  font-weight: 600;
+  text-decoration: none;
+}
+.footnote:hover { color: #003f7f; text-decoration: underline; }
+.references {
+  margin-top: 1.3em;
+  padding-left: 1.4em;
+  color: #444;
+  font-family: var(--body-font);
+  font-size: .95em;
+  line-height: 1.6;
+}
+.references li { margin-bottom: .55em; }
+.references a { color: #005bbb; text-decoration: none; }
+.references a:hover { text-decoration: underline; }
+#references { margin-top: 1.2em; padding-top: .3em; }
+#references::before {
+  display: block;
+  margin-bottom: .6em;
+  color: #999;
+  content: '—';
+  text-align: center;
+}
+
+/* CV index: sticky compact control with an overlay panel. */
+@media screen {
+  /* The shared Page panel clips overflow. Remove that clip only for pages containing the long CV layout,
+     so sticky positioning and the floating index panel can use the viewport. */
+  .main.page:has(.cv-layout) > .content { overflow: visible; }
+
+  .cv-toc {
+    position: sticky;
+    top: .75rem;
+    z-index: 30;
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    align-self: start;
+    justify-self: start;
+    margin: 0 0 1.15rem;
+    padding: 0;
+    background: transparent;
+    color: var(--tt-ebony);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: .84rem;
+    line-height: 1.45;
+  }
+
+  .cv-toc summary {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .28rem .48rem;
+    background: var(--tt-ivory);
+    color: var(--tt-ebony);
+    border: 1px solid rgba(36,39,41,.25);
+    border-radius: 0;
+    cursor: pointer;
+    font: 600 .7rem/1.25 var(--tt-mono);
+    letter-spacing: .08em;
+    list-style: none;
+    text-transform: uppercase;
+  }
+  .cv-toc summary::-webkit-details-marker { display: none; }
+  .cv-toc summary::after {
+    color: var(--tt-blue);
+    content: "▾";
+    font: 500 .85rem/1 var(--tt-mono);
+  }
+  .cv-toc[open] summary::after { content: "▴"; }
+
+  .cv-toc:not([open]) > .cv-toc__nav { display: none; }
+
+  .cv-toc__nav {
+    position: absolute;
+    top: calc(100% + .3rem);
+    left: 0;
+    z-index: 1;
+    box-sizing: border-box;
+    width: min(26rem, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 4.25rem);
+    max-height: calc(100dvh - 4.25rem);
+    overflow: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: .35rem 0;
+    background: var(--tt-ivory);
+    color: var(--tt-ebony);
+    border: 1px solid rgba(36,39,41,.25);
+    border-radius: 0;
+    box-shadow: none;
+  }
+  /* Generated index (Footer TT.toc): sections, each with a count and a fold-out button; one open at a time. */
+  .cv-toc .tt-toc,
+  .cv-toc .tt-toc ol { margin: 0; padding: 0; list-style: none; }
+  .cv-toc .tt-toc li { margin: 0; line-height: 1.3; }
+  .cv-toc .tt-toc > li + li { border-top: 1px solid rgba(36,39,41,.12); }
+  .cv-toc .tt-toc__row { display: flex; align-items: stretch; }
+  .main.page .content__entry .cv-toc .tt-toc a:not(.btn):not([type="button"]):not([type="submit"]):not(button) {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: .5rem .9rem;
+    border: 0;
+    color: var(--tt-ebony);
+    font-size: .82rem;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .main.page .content__entry .cv-toc .tt-toc > li > .tt-toc__row > a:not(.btn) { font-size: .9rem; font-weight: 600; }
+  .main.page .content__entry .cv-toc .tt-toc__sub a:not(.btn) { padding: .32rem .9rem .32rem 1.7rem; }
+  .main.page .content__entry .cv-toc .tt-toc a:not(.btn):hover { background: var(--tt-blue-tint); text-decoration: none; }
+  .main.page .content__entry .cv-toc .tt-toc a.is-current { background: rgba(0, 112, 220, .07); box-shadow: inset 2px 0 0 var(--tt-blue); }
+  .cv-toc .tt-toc__n { margin-left: .35rem; font: 500 .72rem/1 var(--tt-mono); opacity: .55; }
+  .cv-toc .tt-toc__btn {
+    flex: 0 0 2.6rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-left: 1px solid rgba(36,39,41,.12);
+    border-radius: 0;
+    background: transparent;
+    color: var(--tt-ebony);
+    cursor: pointer;
+    font: 500 .95rem/1 var(--tt-mono);
+  }
+  .cv-toc .tt-toc__btn:hover { background: var(--tt-blue-tint); }
+  .cv-toc .tt-toc__btn::before { content: "\25BE"; display: inline-block; transition: transform .18s ease-out; }
+  .cv-toc .tt-toc li.is-open > .tt-toc__row .tt-toc__btn::before { transform: rotate(180deg); }
+  .cv-toc .tt-toc__sub { display: none; padding-bottom: .4rem; }
+  .cv-toc .tt-toc li.is-open > .tt-toc__sub { display: block; }
+  .cv-toc .tt-toc a:focus-visible,
+  .cv-toc .tt-toc__btn:focus-visible { outline: 2px solid var(--tt-blue); outline-offset: -2px; }
+  /* The new short Page snippet (<div class="tt-index">Label</div>) stays hidden until the script replaces it. */
+  .tt-index { display: none; }
+  .cv-toc a:focus-visible,
+  .cv-toc summary:focus-visible { outline: 2px solid var(--tt-blue); outline-offset: 3px; }
+  .cv-layout :target { scroll-margin-top: 4.5rem; }
+}
+@media print { .cv-toc { display: none !important; } }
+/* 05 — Native Post navigation and related cards (stock TechNews markup) */
+/* Share controls and the repeated end-of-article tag cloud are absent from the reference. */
+/* Removed everywhere and at every width (no sidebar to host them). Tags stay in the DOM for accent rules. */
+.content__aside,
+.content__share,
+.content__tag { display: none !important; }
+
+/* Previous/next: tiles in the post's own Feature Colour, small thumbnail + real title.
+   Uses the native TechNews markup and its own "Previous Post"/"Next Post" labels.
+   The same tiles serve the listing pagination (homepage, tag pages) and the Archive Page:
+   the pagination script (Footer block 8) and the archive script (block 6) build the same markup
+   inside .tt-pagehost. Colour = the category of the first post on the target page.
+   Direction on listings: left = Previous page (lower number, newer), right = Next page. */
+.tt-pagehost { --tt-accent: var(--tt-default); }
+/* All tiles (post, homepage, Archive) sit on the Night page, one card gap (1rem, the homepage
+   grid gap) below the content, with the same 1rem gap between the two tiles, so they line up with
+   the card columns. 3rem from the tiles down to the footer menu bar. */
+.tt-pagehost { margin: 0; }                                   /* homepage: the grid gap is the gap */
+.main.page > .tt-pagehost { margin-top: 1rem; }
+.main.page:has(> .tt-pagehost) { margin-bottom: 3rem; }
+.main.post .content__footer { margin: 0; padding: 0; background: var(--tt-default-tint); }
+.main.post { margin-bottom: 3rem; }
+:is(.main.post, .tt-pagehost) .content__nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.main.post .content__nav { margin-top: 1rem; }
+:is(.main.post, .tt-pagehost) .content__nav__prev,
+:is(.main.post, .tt-pagehost) .content__nav__next { max-width: none; margin: 0; text-align: left; }
+:is(.main.post, .tt-pagehost) .content__nav__next { grid-column: 2; }
+:is(.main.post, .tt-pagehost) .content__nav__link {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 5.75rem;
+  padding: .65rem 1rem .65rem .65rem;
+  background: var(--tt-accent);
+  border: 0;
+  border-radius: 0;
+  color: var(--tt-ebony);
+}
+:is(.main.post, .tt-pagehost) .content__nav__next .content__nav__link {
+  grid-template-columns: minmax(0, 1fr) 4.5rem;
+  padding: .65rem .65rem .65rem 1rem;
+  text-align: right;
+}
+:is(.main.post, .tt-pagehost) .content__nav__next .content__nav__link > img { order: 2; }
+:is(.main.post, .tt-pagehost) .content__nav__link:hover { filter: brightness(.96); color: var(--tt-ebony); }
+:is(.main.post, .tt-pagehost) .content__nav__link > img {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: 0;
+  object-fit: cover;
+  border-radius: 0;
+}
+:is(.main.post, .tt-pagehost) .content__nav__link .u-small {
+  color: var(--tt-ebony);
+  font-size: .7rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+:is(.main.post, .tt-pagehost) .content__nav__link h5 {
+  margin: .3rem 0 0;
+  color: var(--tt-ebony);
+  font: 600 1.12rem / 1.2 var(--heading-font);
+  letter-spacing: -.01em;
+  text-transform: none;
+}
+
+@media (max-width: 720px) {
+  :is(.main.post, .tt-pagehost) .content__nav { grid-template-columns: 1fr; }
+  :is(.main.post, .tt-pagehost) .content__nav__next { grid-column: 1; }
+}
+
+/* 06 — Category colours (main tag = category = colour, 28 Oct) and card excerpts
+   Posts: the main tag's slug. Cards: their own main tag (CSS) or .tt-fc-<category> from the footer script.
+   Pages: an fc-<category> marker in the content. Without a category: matte white (section 03). */
+
+/* Categories: main tag = category = colour.
+   Only the MAIN tag counts: on cards it is the card's own tag, on posts the tag in the title band
+   (.content__header). A category tag sitting on a post as an extra tag is ignored, so stray extras
+   (Firefight + security, Vivaldi + security, ...) cannot recolour a post during the tag clean-up. */
+/* One rule per category: whatever carries the category (card, post, Page marker, Previous/Next tile,
+   Archive item) gets --cat and --cat-tint; the components below and in sections 02/03 read them. */
+.c-card.tt-fc-security, .c-card:has(.c-card__tag.u-tag--security),
+.main.post > .content:has(.content__header .u-tag--security), .main.page > .content:has(.fc-security),
+.content__nav__link.tt-fc-security, .tt-ap__item.tt-fc-security { --cat: var(--cat-security); --cat-tint: var(--cat-security-tint); }
+.c-card.tt-fc-compliance, .c-card:has(.c-card__tag.u-tag--compliance),
+.main.post > .content:has(.content__header .u-tag--compliance), .main.page > .content:has(.fc-compliance),
+.content__nav__link.tt-fc-compliance, .tt-ap__item.tt-fc-compliance { --cat: var(--cat-compliance); --cat-tint: var(--cat-compliance-tint); }
+.c-card.tt-fc-internet, .c-card:has(.c-card__tag.u-tag--internet),
+.main.post > .content:has(.content__header .u-tag--internet), .main.page > .content:has(.fc-internet),
+.content__nav__link.tt-fc-internet, .tt-ap__item.tt-fc-internet { --cat: var(--cat-internet); --cat-tint: var(--cat-internet-tint); }
+.c-card.tt-fc-itsm, .c-card:has(.c-card__tag.u-tag--itsm),
+.main.post > .content:has(.content__header .u-tag--itsm), .main.page > .content:has(.fc-itsm),
+.content__nav__link.tt-fc-itsm, .tt-ap__item.tt-fc-itsm { --cat: var(--cat-itsm); --cat-tint: var(--cat-itsm-tint); }
+.c-card.tt-fc-career, .c-card:has(.c-card__tag.u-tag--career),
+.main.post > .content:has(.content__header .u-tag--career), .main.page > .content:has(.fc-career),
+.content__nav__link.tt-fc-career, .tt-ap__item.tt-fc-career { --cat: var(--cat-career); --cat-tint: var(--cat-career-tint); }
+.c-card.tt-fc-tech, .c-card:has(.c-card__tag.u-tag--tech),
+.main.post > .content:has(.content__header .u-tag--tech), .main.page > .content:has(.fc-tech),
+.content__nav__link.tt-fc-tech, .tt-ap__item.tt-fc-tech { --cat: var(--cat-tech); --cat-tint: var(--cat-tech-tint); }
+.c-card.tt-fc-gaming, .c-card:has(.c-card__tag.u-tag--gaming),
+.main.post > .content:has(.content__header .u-tag--gaming), .main.page > .content:has(.fc-gaming),
+.content__nav__link.tt-fc-gaming, .tt-ap__item.tt-fc-gaming { --cat: var(--cat-gaming); --cat-tint: var(--cat-gaming-tint); }
+/* Legacy Page marker still in use (About and the legal Pages) */
+.main.page > .content:has(.fc-silver) { --cat: var(--cat-compliance); --cat-tint: var(--cat-compliance-tint); }
+/* Tiles and Archive items carry their own category (set by the Footer scripts). */
+:is(.main.post, .tt-pagehost) .content__nav__link[class*="tt-fc-"] { background: var(--cat); }
+.tt-ap__item[class*="tt-fc-"] .tt-ap__cat { background: var(--cat); }
+
+/* Card excerpt (inserted between title and the date/tag box). */
+.c-card .tt-excerpt {
+  max-width: 34rem;
+  margin: -.2rem 0 .9rem;
+  color: var(--tt-ebony);
+  font: .94rem / 1.45 var(--body-font);
+}
+.main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .tt-excerpt,
+.main.l-grid--2col-2-1 .c-card:nth-child(3n) .tt-excerpt,
+.main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .tt-excerpt,
+.main.l-grid--2col-4-1 .c-card:nth-child(5n) .tt-excerpt { font-size: 1.08rem; }
+
+/* Equal card heights: Theme Settings card heights are exact heights on wide screens;
+   title and excerpt are clamped so longer texts cannot stretch a card. */
+@media (min-width: 1101px) {
+  .c-card .c-card__wrapper { height: var(--card-small-height); min-height: 0; }
+  .main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .c-card__wrapper,
+  .main.l-grid--2col-2-1 .c-card:nth-child(3n) .c-card__wrapper,
+  .main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .c-card__wrapper,
+  .main.l-grid--2col-4-1 .c-card:nth-child(5n) .c-card__wrapper { height: var(--card-large-height); min-height: 0; }
+  .c-card .c-card__image { min-height: 0; }
+  .c-card .u-header { overflow: hidden; max-height: 100%; }
+}
+.c-card .c-card__title a,
+.c-card .tt-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.c-card .c-card__title,
+.c-card .tt-excerpt { hyphens: manual; }   /* no mid-word splits in clamped text */
+.c-card .c-card__title a { -webkit-line-clamp: 3; line-clamp: 3; }
+.c-card .tt-excerpt { -webkit-line-clamp: 2; line-clamp: 2; }
+.main.l-grid--2col-1-2 .c-card:nth-child(3n-2) .tt-excerpt,
+.main.l-grid--2col-2-1 .c-card:nth-child(3n) .tt-excerpt,
+.main.l-grid--2col-1-4 .c-card:nth-child(5n-4) .tt-excerpt,
+.main.l-grid--2col-4-1 .c-card:nth-child(5n) .tt-excerpt { -webkit-line-clamp: 3; line-clamp: 3; }
+
+/* Card text stack: date/tag box on top (label position, as in the concept), then title,
+   then excerpt. Top-aligned, so date boxes line up across a row and are never the part that gets cut. */
+.c-card .u-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;   /* top-aligned: date boxes line up across a row */
+  padding-top: 1rem;
+  align-self: stretch;
+  gap: .5rem;
+}
+.c-card .u-header__meta { order: -1; flex-shrink: 0; }
+.main.l-grid .c-card .c-card__title { margin: 0; }
+.c-card .tt-excerpt { margin: 0; }
+
+/* 65 — Archive Page. The list is built by the archive script (Footer block 6) inside
+   <div class="tt-allposts"> on a Page. Per year: date in the mono column, title, category label in
+   its colour, excerpt. Without the script the fallback text in the div stays as written. */
+.main.page .content__entry .tt-allposts { max-width: 72ch; }
+.tt-ap__count {
+  margin: 0 0 1.2rem;
+  padding-bottom: .9rem;
+  border-bottom: 1px solid rgba(36,39,41,.22);
+  font-family: var(--tt-mono);
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--tt-shell);
+  opacity: .7;
+}
+.tt-ap__year + .tt-ap__year { margin-top: 2.2rem; }
+.main.page .content__entry .tt-ap__year > h2 { margin: 1.2rem 0 .4rem; }
+.tt-ap__list { list-style: none; margin: 0; padding: 0; }
+.tt-ap__item {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 0 1.25rem;
+  margin: 0;
+  padding: .9rem 0;
+  --tt-list-rule: rgba(36,39,41,.14);
+}
+.tt-ap__item:last-child { border-bottom: 1px solid rgba(36,39,41,.14); }
+.tt-ap__date {
+  padding-top: .2em;
+  font-family: var(--tt-mono);
+  font-size: .78rem;
+  letter-spacing: .02em;
+  color: var(--tt-shell);
+  opacity: .75;
+  white-space: nowrap;
+}
+.main.page .content__entry a.tt-ap__title:not(.btn):not([type=button]):not([type=submit]):not(button) {
+  font-family: var(--heading-font);
+  font-weight: 700;
+  font-size: 1.08rem;
+  line-height: 1.3;
+  text-decoration: none;
+}
+.main.page .content__entry a.tt-ap__title:not(.btn):not([type=button]):not([type=submit]):not(button):hover { text-decoration: underline; }
+.tt-ap__cat {
+  display: inline-block;
+  margin-left: .6rem;
+  padding: .05rem .45rem;
+  vertical-align: .12em;
+  font-family: var(--tt-mono);
+  font-size: .68rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--tt-ebony);
+  background: var(--tt-silver-light);
+}
+.main.page .content__entry p.tt-ap__excerpt {
+  max-width: none;
+  margin: .3rem 0 0;
+  font-size: .92rem;
+  line-height: 1.55;
+  color: var(--tt-shell);
+  opacity: .85;
+}
+@media (max-width: 600px) {
+  .tt-ap__item { grid-template-columns: minmax(0, 1fr); }
+  .tt-ap__date { padding: 0 0 .15rem; }
+}
+
+
+/* Archive and tag navigation — stock TechNews, Custom CSS. */
+.tt-category-nav {
+  --tt-nav-ink: var(--tt-ivory);
+  --tt-nav-rule: rgba(235, 234, 229, .25);
+  --tt-nav-active: var(--tt-blue-light);
+  margin: 0 0 1.5rem;
+}
+.main.page .content__entry .tt-category-nav {
+  --tt-nav-ink: var(--tt-shell);
+  --tt-nav-rule: rgba(36, 39, 41, .24);
+  --tt-nav-active: var(--tt-shell);
+  margin: .25rem 0 1.5rem;
+}
+.tt-category-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem 1rem;
+  margin: 0;
+  padding: 0 0 .5rem;
+  border-bottom: 1px solid var(--tt-nav-rule);
+  list-style: none;
+}
+.tt-category-nav li { margin: 0; padding: 0; list-style: none; }
+.tt-category-nav a {
+  display: inline-block;
+  padding: .35rem 0 .4rem;
+  border-bottom: 2px solid transparent;
+  color: var(--tt-nav-ink) !important;
+  font: 600 .72rem / 1.3 var(--tt-mono);
+  letter-spacing: .075em;
+  text-decoration: none !important;
+  text-transform: uppercase;
+}
+.tt-category-nav a:hover,
+.tt-category-nav a:focus-visible { color: var(--tt-nav-active) !important; }
+.tt-category-nav a:focus-visible { outline: 2px solid var(--tt-nav-active); outline-offset: 3px; }
+.tt-category-nav a[aria-current="page"] {
+  color: var(--tt-nav-active) !important;
+  border-bottom-color: var(--tt-nav-active);
+}
+
+/* The seven editorial tag pages set this through the shared navigation script.
+   A secondary tag gets the neutral blue accent. */
+.page--tag { --tt-list-accent: var(--tt-blue); }
+.page--tag[data-tt-category="security"]   { --tt-list-accent: var(--cat-security); }
+.page--tag[data-tt-category="compliance"] { --tt-list-accent: var(--cat-compliance); }
+.page--tag[data-tt-category="internet"]   { --tt-list-accent: var(--cat-internet); }
+.page--tag[data-tt-category="itsm"]       { --tt-list-accent: var(--cat-itsm); }
+.page--tag[data-tt-category="career"]     { --tt-list-accent: var(--cat-career); }
+.page--tag[data-tt-category="tech"]       { --tt-list-accent: var(--cat-tech); }
+.page--tag[data-tt-category="gaming"]     { --tt-list-accent: var(--cat-gaming); }
+.page--tag .tt-category-nav {
+  --tt-nav-ink: var(--tt-shell);
+  --tt-nav-rule: rgba(36, 39, 41, .22);
+  --tt-nav-active: var(--tt-shell);
+  margin-bottom: 1.4rem;
+}
+.page--tag .tt-category-nav a[aria-current="page"] {
+  padding-inline: .35rem;
+  background: var(--tt-list-accent);
+  border-bottom-color: var(--tt-shell);
+  color: var(--tt-shell) !important;
+}
+/* Title band in the category colour (gold for an ordinary tag), Ebony text. */
+.page--tag .page__header {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--tt-list-accent);
+  color: var(--tt-shell);
+}
+.page--tag .page__title {
+  padding: 0;
+  border: 0;
+  color: var(--tt-shell);
+  font: 600 clamp(1.4rem, 2.3vw, 2rem) / 1.15 var(--heading-font);
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+.page--tag .page__header p {
+  max-width: 68ch;
+  margin: .8rem 0 0;
+  color: var(--tt-shell);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+/* TechNews supplies every tag article, its URL, date and optional image.
+   The same existing Footer excerpt script supplies the short summary. */
+.page--tag .l-grid {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.page--tag .l-grid > .c-card {
+  --tt-list-rule: rgba(36, 39, 41, .18);
+  display: block;
+  width: 100%;
+  margin: 0;
+  overflow: visible;
+  color: var(--tt-shell);
+}
+:is(.tt-ap__item, .page--tag .l-grid > .c-card) { border-top: 1px solid var(--tt-list-rule); }
+.page--tag .l-grid > .c-card:last-of-type { border-bottom: 1px solid var(--tt-list-rule); }
+:is(.tt-ap__date, .page--tag .c-card time) {
+  font-family: var(--tt-mono);
+  font-size: .78rem;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.page--tag .c-card .c-card__wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(5rem, 12vw, 7rem);
+  gap: 1rem;
+  align-items: start;
+  height: auto;
+  min-height: 0;
+  padding: .9rem 0;
+  background: transparent;
+  color: var(--tt-shell);
+}
+.page--tag .c-card .c-card__wrapper:not(:has(.c-card__image)) { grid-template-columns: minmax(0, 1fr); }
+.page--tag .c-card .c-card__image {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  height: auto !important;
+  min-height: 0;
+  aspect-ratio: 4 / 3;
+  background: var(--tt-ivory);
+}
+.page--tag .c-card .c-card__image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.page--tag .c-card .u-header {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  gap: .35rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  color: var(--tt-shell);
+}
+.page--tag .c-card .u-header__meta {
+  order: -1;
+  width: auto;
+  padding: 0;
+  background: transparent;
+  color: var(--tt-shell);
+}
+.page--tag .c-card .u-header__meta time { color: var(--tt-shell) !important; }
+.page--tag .c-card .c-card__title {
+  margin: 0;
+  color: var(--tt-shell);
+  font: 600 1.14rem / 1.25 var(--heading-font);
+  letter-spacing: -.01em;
+}
+.page--tag .c-card .c-card__title a { color: inherit; }
+.page--tag .c-card .c-card__title a:hover { color: var(--tt-list-accent); }
+.page--tag .c-card .tt-excerpt {
+  display: block;
+  max-width: 68ch;
+  margin: 0;
+  overflow: visible;
+  color: rgba(36, 39, 41, .82);
+  font: .94rem / 1.5 var(--body-font);
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
+.page--tag .pagination { margin-top: 1rem; }
+@media (max-width: 600px) {
+  .page--tag .c-card .c-card__wrapper { gap: .7rem; }
+  .tt-category-nav ul { gap: .15rem .75rem; }
+}
+@media (max-width: 720px) {
+  /* The existing global phone-card rules use !important for grid placement. */
+  .page--tag .c-card .c-card__wrapper { grid-template-columns: minmax(0, 1fr) 5rem !important; }
+  .page--tag .c-card .c-card__wrapper:not(:has(.c-card__image)) { grid-template-columns: minmax(0, 1fr) !important; }
+  .page--tag .c-card .c-card__image { grid-column: 2 !important; grid-row: 1 !important; }
+  .page--tag .c-card .u-header { grid-column: 1 !important; grid-row: 1 !important; }
+}
+
+/* Tag pages and the tag index share the Archive's Ivory surface and 72ch column. */
+.main.page--tag,
+.main.page--tags {
+  box-sizing: border-box;
+  padding: clamp(1rem, 2.2vw, 2rem) clamp(1rem, 2.2vw, 2rem) 3rem;
+  background: var(--tt-default-tint);
+  color: var(--tt-shell);
+}
+
+.page--tag .page__header,
+.page--tag .tt-category-nav,
+.page--tag .l-grid,
+.page--tags .page__header,
+.page--tags .l-grid {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 72ch;
+  margin-inline: auto;
+}
+
+
+/* The native 46-tag index remains a real Publii page, with compact entries. */
+.page--tags .page__header { margin-bottom: 1.25rem; }
+.page--tags .page__title {
+  color: var(--tt-shell);
+  font: 600 clamp(1.4rem, 2.3vw, 2rem) / 1.15 var(--heading-font);
+}
+.page--tags .l-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: .5rem;
+}
+.page--tags .l-grid > .c-card {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0;
+}
+.page--tags .c-card .c-card__wrapper {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: .65rem .85rem !important;
+  border-left: 3px solid var(--tt-blue);
+  background: var(--tt-ivory) !important;
+  color: var(--tt-shell);
+}
+.page--tags .c-card .c-card__wrapper:has(.c-card__image) {
+  grid-template-columns: minmax(0, 1fr) 3rem;
+  gap: .6rem;
+}
+.page--tags .c-card .c-card__image {
+  grid-column: 2;
+  grid-row: 1;
+  width: 3rem;
+  height: 3rem !important;
+  min-height: 0;
+  margin: 0;
+}
+.page--tags .c-card .c-card__image img { width: 100%; height: 100%; object-fit: cover; }
+.page--tags .c-card .u-header {
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  grid-column: 1;
+  grid-row: 1;
+  gap: .2rem .6rem;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--tt-shell);
+}
+.page--tags .c-card .c-card__title {
+  order: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--heading-font);
+  font-size: 1rem !important;
+  font-weight: 600;
+  line-height: 1.3 !important;
+  color: var(--tt-shell);
+}
+.page--tags .c-card .c-card__title a { color: inherit; }
+.page--tags .c-card .u-header__meta {
+  order: 2 !important;
+  flex-shrink: 0;
+  position: static;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--tt-shell);
+  font: .72rem / 1.3 var(--tt-mono);
+  white-space: nowrap;
+}
+.page--tags .c-card .c-card__wrapper:hover,
+.page--tags .c-card .c-card__wrapper:focus-within { background: var(--tt-blue-tint) !important; }
+
+@media (max-width: 600px) {
+  .main.page--tag, .main.page--tags { padding: 1rem .9rem 2rem; }
+  .page--tag .page__header { padding: .8rem 1rem; }
+  .page--tags .l-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Explain main-category navigation, equalize tag-list titles, and show three tag-index columns. */
+.tt-category-nav .tt-category-nav__context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .15rem .6rem;
+  max-width: none;
+  margin: 0 0 .35rem;
+  color: var(--tt-nav-ink);
+  font: .82rem / 1.4 var(--body-font);
+}
+.tt-category-nav__context-label {
+  font: 600 .72rem / 1.4 var(--tt-mono);
+  letter-spacing: .075em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.main.page--tag .l-grid .c-card .c-card__title { font-size: 1.14rem; line-height: 1.25; }
+.page--tags .l-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 850px) { .page--tags .l-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .page--tags .l-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* 07 — Footer
+   Content: Publii > Theme Settings > Footer > Copyright text (custom-html/footer-settings-copyright.html).
+   The "From the archive" band is removed (markup v2); its job is done by the repeated menu bar
+   (section 85c), which now sits at the top of the footer. Then the silver footer with four columns
+   and a bottom line, modelled on the rikardmalmborg.se footer structure. */
+.footer__logo { display: none !important; }              /* the site name is the masthead's job */
+.footer > nav:has(.footer__nav:empty) { display: none; }  /* empty footer menu: no stray gap */
+
+.footer {
+  width: 100%;
+  max-width: none;
+  margin: 3rem 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+.footer__copyright {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font-size: inherit;
+  text-align: left;
+}
+
+/* Silver footer: a panel exactly as wide as the cards above it */
+.tt-foot { margin: 2.5rem 0 3rem; background: var(--tt-silver); color: var(--tt-ebony); }
+.tt-foot__grid,
+.tt-foot__bottom { width: auto; margin: 0 clamp(1rem, 3vw, 2.5rem); }
+.tt-foot__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2rem;
+  padding: 3rem 0 2rem;
+}
+.tt-foot__col h4 {
+  margin: 0 0 1rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid rgba(36,39,41,.3);
+  color: var(--tt-ebony);
+  font: 500 .78rem / 1.2 var(--tt-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.tt-foot__col a {
+  display: block;
+  margin: 0 0 .55rem;
+  color: var(--tt-ebony);
+  font: 1rem / 1.35 var(--body-font);
+  text-decoration: none;
+}
+.tt-foot__col a:hover { text-decoration: underline; text-underline-offset: .18em; }
+.tt-foot__bottom {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 0 2rem;
+  border-top: 1px solid rgba(36,39,41,.3);
+}
+.tt-foot__bottom p { margin: 0; color: var(--tt-ebony); font: .82rem / 1.55 var(--body-font); }
+.tt-foot__bottom a { color: var(--tt-ebony); text-decoration: underline; }
+.tt-belt { flex: 0 0 auto; color: var(--tt-ebony); }
+
+@media (max-width: 900px) {
+  .tt-foot__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .tt-foot__grid { grid-template-columns: 1fr; }
+  .tt-foot__bottom { flex-direction: column; align-items: flex-start; }
+}
+
+/* 08 — Masthead banner (implementation/banner/conram-banner.css, categories 28 Oct + TechNews integration) */
+/* =====================================================================
+   conram.it — masthead banner  (Typotechtural, approved 2026-10-27, QA round 1 + v18 prep; categories 28 Oct)
+   Paste into Publii › Settings › Custom Code › Custom CSS.
+   Scope: conram.it only (soholab is a separate Publii site).
+   Everything is namespaced under .cbanner — no theme selectors touched.
+
+   QA round 1:
+   - Content now sits in the site frame: .cbanner__inner = max-width var(--main-col-width) (80rem), centred.
+     The band (.cbanner) stays full width; its background equals the page (seamless, option a).
+   - All sizes in rem, so the banner scales with the site's root font size above 2000px.
+   - Ebony ground only (ivory rules kept below, dormant, so a revert is a JS config change).
+   - Silver corrected to #B7B9BA.
+
+   v18 prep:
+   - Frame rule from the Publii thread folded in: .cbanner__inner = min(frame, 100% - 2rem),
+     no padding. The old gutter variable is gone (the site now has one 1rem gutter everywhere).
+   - Night #1F252C decided (DECISIONS rev 5.2): --cb-page is no longer a trial value.
+   - Hairline kept (QA report 27 Oct).
+   - Drawing breakpoint 1140 -> 1280px: below that the art would shrink under ~310px.
+   - Topic label hidden at <=860px (was <=600): logo + topic + belt overflowed between 601 and ~841px.
+   ===================================================================== */
+
+/* ---- Palette (scoped to the banner, not :root, to avoid theme clashes) ---- */
+.cbanner{
+  --cb-ebony:#242729; --cb-ivory:#EBEAE5;
+  --cb-gold:#CBB588;
+  --cb-gold-deep:#B89B5E;
+  /* Category colours: the banner reads the site tokens --cat-<category> directly. */
+  /* Site mono: Geist Mono via the site token --tt-mono (Custom CSS section 00); fallbacks if absent. */
+  --cb-mono:var(--tt-mono, "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace);
+  --cb-frame:var(--main-col-width, 80rem);   /* same frame as topbar, menu, cards and posts */
+  /* Page ground "Night". Must equal the site's --tt-page,
+     otherwise the seamless band shows an edge. Ebony stays the ink. */
+  --cb-page:#1F252C;
+  /* Hairline between banner and page, frame width only (kept after QA, 27 Oct). */
+  --cb-rule:color-mix(in srgb, var(--cb-ivory) 18%, transparent);
+}
+.cbanner, .cbanner *{box-sizing:border-box}
+
+/* ---- Band: full width, seamless with the page (no edge, no border) ---- */
+.cbanner{
+  --bg:var(--cb-page); --fg:var(--cb-ivory);
+  background:var(--bg); color:var(--fg);
+}
+
+/* ---- Frame: logo | topic | drawing | belt, aligned to the site frame ---- */
+.cbanner__inner{
+  position:relative; display:grid;
+  grid-template-columns:auto 19rem 1fr 10rem;     /* fixed topic column: drawings align across banners; sized for the longest label, COMPLIANCE */
+  align-items:center; height:11.875rem; overflow:hidden;
+  /* Frame = the site's: --main-col-width, with 1rem gutters once the window is narrower
+     (same rule as .topbar, .navbar, .main-content and posts; from the Publii thread). */
+  max-width:min(var(--cb-frame), calc(100% - 2rem)); margin:0 auto; padding-inline:0;
+  border-bottom:1px solid var(--cb-rule);          /* hairline, frame width */
+}
+
+/* ---- Logo lockup: fixed colour, never Feature-coloured. Flush with the frame's left edge. ---- */
+.cbanner__brand{padding:0 2.5rem 0 0; position:relative; z-index:2; color:inherit; text-decoration:none}
+.cbanner__word{display:block; height:2.875rem; width:auto}       /* Audiowide (OFL) 88%, outlined — no font load */
+.cbanner__word .cw-dot{fill:var(--cb-gold-deep)}
+.cbanner[data-ground="ebony"] .cbanner__word .cw-dot{fill:var(--cb-gold)}
+.cbanner__tag{                                                     /* justified to the wordmark width */
+  display:flex; justify-content:space-between;
+  margin-top:.875rem; padding-top:.75rem; border-top:1px solid color-mix(in srgb,var(--fg) 35%,transparent);
+  font:400 1.25rem/1 var(--cb-mono); letter-spacing:.04em; text-transform:uppercase; opacity:.8;
+}
+.cbanner__tag i{font-style:normal; opacity:.45}
+
+/* ---- Topic label: the only text that takes Feature Colour ---- */
+.cbanner__label{
+  align-self:stretch; display:flex; align-items:center; gap:.875rem;
+  padding:0 2rem; border-left:1px solid color-mix(in srgb,var(--fg) 25%,transparent);
+  margin:2.75rem 0; position:relative; z-index:2;
+  font:500 1.5rem/1 var(--cb-mono); letter-spacing:.12em; text-transform:uppercase;
+  color:var(--fa);
+}
+.cbanner__label::after{content:""; width:2.5rem; height:1px; background:currentColor; flex:none}
+
+/* ---- Drawing: hairline line art in the belt's language ---- */
+.cbanner__art{
+  align-self:stretch; position:relative; min-height:0;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%); mask-image:linear-gradient(90deg,transparent 0,#000 9%);
+}
+.cbanner__art svg{position:absolute; top:0; bottom:0; left:0; height:100%; width:calc(100% - 2.5rem); display:block} /* clear space before the belt */
+.cbanner__art .q{stroke:var(--fg); stroke-opacity:.32; fill:none}
+.cbanner__art .q:not([stroke-width]){stroke-width:1.5}
+.cbanner__art .qf{fill:var(--fg); fill-opacity:.32}
+.cbanner__art .qs{stroke:var(--fg); stroke-opacity:.16; fill:none}
+.cbanner__art .qs:not([stroke-width]){stroke-width:1.25}
+.cbanner__art .a{stroke:var(--fa); fill:none}
+.cbanner__art .a:not([stroke-width]){stroke-width:2}
+.cbanner__art .af{fill:var(--fa)}
+
+/* ---- Belt: full mark in hairline (inline mask). Flush with the frame's right edge. ---- */
+.cbanner__belt{
+  width:8.75rem; height:8.75rem; justify-self:end; margin-right:0;
+  background:var(--fa);
+  -webkit-mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='80.38 27.08 224.88 224.88'><g transform='rotate%28-34.8015 192.82 139.52%29'><g fill='none' stroke='%23000' stroke-width='2'><circle cx='126.12' cy='151.52' r='59.52'/><circle cx='192.66' cy='139.66' r='59.52'/><circle cx='259.52' cy='127.52' r='59.52'/></g><circle cx='134.063' cy='150.104' r='13'/><circle cx='192.66' cy='139.66' r='13'/><circle cx='251.222' cy='129.027' r='13'/></g></svg>") center/contain no-repeat;
+          mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='80.38 27.08 224.88 224.88'><g transform='rotate%28-34.8015 192.82 139.52%29'><g fill='none' stroke='%23000' stroke-width='2'><circle cx='126.12' cy='151.52' r='59.52'/><circle cx='192.66' cy='139.66' r='59.52'/><circle cx='259.52' cy='127.52' r='59.52'/></g><circle cx='134.063' cy='150.104' r='13'/><circle cx='192.66' cy='139.66' r='13'/><circle cx='251.222' cy='129.027' r='13'/></g></svg>") center/contain no-repeat;
+}
+
+/* ---- Drop the drawing ----
+   Breakpoint 1280px (was 1140): logo + topic + belt take ~58rem, so below 1280 the drawing would
+   shrink under ~310px (177px at 1141) and lose its dots and symbols. Media queries stay in px. */
+@media (max-width:1280px){
+  .cbanner__inner{grid-template-columns:auto 1fr 7.5rem; height:9.375rem}
+  .cbanner__art{display:none}
+  .cbanner__belt{width:6rem; height:6rem}
+  .cbanner__word{height:2.25rem}
+  .cbanner__tag{font-size:.9375rem}
+}
+/* ---- Narrow: drop the topic too ----
+   Logo + topic + belt overflow the frame below ~841px with the longest label (was "Infrastructure";
+   now "Compliance" is the longest, so there is more margin).
+   860px leaves ~20px margin. Check this breakpoint if a longer topic is ever added.
+   (Replaces the Publii thread's INTERIM block, 27 Oct.) */
+@media (max-width:860px){
+  .cbanner__inner{grid-template-columns:1fr 7.5rem}
+  .cbanner__label{display:none}
+}
+/* ---- Phone: smaller sizes ---- */
+@media (max-width:600px){
+  .cbanner__inner{grid-template-columns:1fr 5.25rem; height:7.5rem}
+  .cbanner__label{display:none}
+  .cbanner__brand{padding:0 .5rem 0 0}
+  .cbanner__word{height:1.75rem}
+  .cbanner__tag{letter-spacing:0; font-size:.6875rem}
+  .cbanner__belt{width:4rem; height:4rem}
+}
+
+/* ---- Integration with stock TechNews (Publii thread, verified 2026-10-27) ----
+   The script inserts .cbanner directly under <body>, before <header class="topbar">; the menu
+   stays below it (styled in section 08b). The stock .logo is hidden only when a banner is present,
+   so if the script ever fails the text wordmark from section 02 still shows. */
+body:has(> .cbanner) .topbar .logo { display: none !important; }
+/* The wordmark turns sharp blue on hover and keyboard focus (the tagline and the gold dot stay). */
+.cbanner__word { transition: color .18s ease-out; }
+.cbanner__brand:hover .cbanner__word,
+.cbanner__brand:focus-visible .cbanner__word { color: var(--tt-blue); }
+
+/* 08b — Main menu, variant A "flush under the hairline" (implementation/menu, ON TRIAL 27 Oct).
+   Scoped to body:has(> .cbanner): without the banner script the menu keeps the section 02 look.
+   Selectors verified against generated TechNews 3.2.0.0 markup:
+   nav.navbar > button.navbar__toggle + ul.navbar__menu > li[.has-submenu|.active] > a (+ ul.navbar__submenu.level-2).
+   Current item: li.active (Publii sets it on Pages; posts and Home have no marker). Hamburger below 56.25em. */
+
+/* 1. Directly under the banner hairline, on the frame, no own line.
+   The menu row sits on a full-width Navy band (the topbar spans the viewport; the items keep the frame). */
+body:has(> .cbanner) > header.topbar { background: var(--tt-navy); }
+body:has(> .cbanner) .topbar__inner {
+  max-width: var(--main-col-width, 80rem);   /* .topbar's own padding already gives the 1rem gutters */
+  margin: 0 auto; padding: 0; gap: 0;
+  height: 3.25rem; display: flex; flex-direction: row; align-items: center;
+  border: 0;
+}
+body:has(> .cbanner) .topbar .navbar {
+  width: 100%; max-width: none; min-height: 0; height: 100%;
+  margin: 0; padding: 0; border: 0;
+}
+
+/* 2. Items: first item flush with the wordmark's left edge. Links and text-only parents (Publii
+   .is-separator spans) share one look; the stock rounded pill is removed in every state. */
+body:has(> .cbanner) .navbar .navbar__menu { gap: clamp(1rem, 2vw, 1.75rem); margin: 0; padding: 0; height: 100%; align-items: stretch; }
+body:has(> .cbanner) .navbar .navbar__menu > li { display: flex; align-items: center; padding: 0; margin: 0; font-size: inherit; letter-spacing: normal; }
+body:has(> .cbanner) .navbar .navbar__menu > li > a,
+body:has(> .cbanner) .navbar .navbar__menu > li > .is-separator {
+  display: flex; align-items: center; height: 100%;
+  padding: 0; margin: 0;
+  font: 600 .9375rem/1 var(--tt-mono);
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--tt-ivory); opacity: 1; text-decoration: none;
+  background: transparent; border-radius: 0;
+}
+
+/* 3. States: hover/focus and current Page keep Ivory text with a 2px sharp-blue rule at the foot of the row.
+   A parent whose submenu page is current gets no underline: the submenu's vertical marker says it. */
+body:has(> .cbanner) .navbar .navbar__menu > li > a:hover,
+body:has(> .cbanner) .navbar .navbar__menu > li > a:focus-visible,
+body:has(> .cbanner) .navbar .navbar__menu > li:hover > a,
+body:has(> .cbanner) .navbar .navbar__menu > li:hover > .is-separator[aria-haspopup="true"],
+body:has(> .cbanner) .navbar .navbar__menu > li:focus-within > .is-separator[aria-haspopup="true"] { color: var(--tt-ivory); opacity: 1; box-shadow: inset 0 -2px 0 var(--tt-blue); }
+body:has(> .cbanner) .navbar .navbar__menu > li > a:focus-visible { outline: 2px solid var(--tt-blue-light); outline-offset: 3px; }
+body:has(> .cbanner) .navbar .navbar__menu > li.active > a {
+  color: var(--tt-ivory); opacity: 1;
+  box-shadow: inset 0 -2px 0 var(--tt-blue);
+}
+body:has(> .cbanner) .navbar .navbar__menu > li.has-submenu.active > a { box-shadow: none; }
+
+/* 4. Dropdowns: Ebony panel, mono, blue hover; five or more items become two balanced columns.
+   The items are flex rows, so the stock absolutely positioned submenu is anchored under the row;
+   the caret (stock ::after) sits right of the label. Below 56.25em the theme hides this menu. */
+body:has(> .cbanner) .navbar .navbar__menu > li.has-submenu { padding-right: 1rem; }
+body:has(> .cbanner) .navbar .navbar__menu > li.has-submenu::after { right: 0; border-color: var(--tt-ivory) transparent transparent transparent; opacity: .85; }
+body:has(> .cbanner) .navbar .navbar__menu > li.has-submenu:hover::after,
+body:has(> .cbanner) .navbar .navbar__menu > li.has-submenu:focus-within::after { border-top-color: var(--tt-blue-light); opacity: 1; }
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu {
+  top: 100%; margin-top: 0 !important;
+  box-sizing: border-box; width: max-content; min-width: 14rem; max-width: calc(100vw - 2rem);
+  padding: .4rem 0;
+  overflow-wrap: anywhere; white-space: normal;
+  background: var(--tt-ebony);
+  border: 1px solid color-mix(in srgb, var(--tt-ivory) 20%, transparent); border-radius: 0;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+  z-index: 1;
+}
+/* Keyboard: stock TechNews opens a submenu only on li:hover/:focus, which a Tab never reaches. */
+body:has(> .cbanner) .navbar .navbar__menu > li.has-submenu:focus-within > .navbar__submenu {
+  left: 0; opacity: 1; transform: scale(1); visibility: visible;
+}
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu:has(> li:nth-child(5)) {
+  width: min(calc(21.3rem + 3.6rem + 2px), calc(100vw - 2rem));   /* ~10.65rem of text per column */
+  column-count: 2; column-gap: 0; column-fill: balance;
+  column-rule: 1px solid rgba(235, 234, 229, .14);
+}
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li {
+  display: block; width: auto; break-inside: avoid-column;
+  font: 400 .8125rem/1.25 var(--tt-mono); letter-spacing: .04em; text-transform: none;
+}
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a {
+  display: block; padding: .58rem .9rem; text-align: left;   /* stock centres them */
+  font: 400 .8125rem/1.2 var(--tt-mono); letter-spacing: .06em; text-transform: none;
+  color: var(--tt-ivory); background: transparent; text-decoration: none; white-space: normal;
+  transition: color .14s ease, background-color .14s ease;
+}
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li + li > a { border-top: 1px solid rgba(235, 234, 229, .12); }
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a:hover,
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a:focus-visible { color: var(--tt-ivory); background: rgba(0, 112, 220, .22); }
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a:focus-visible {
+  position: relative; z-index: 1;
+  outline: 2px solid var(--tt-blue-light); outline-offset: -3px;
+}
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li.active > a { color: var(--tt-ivory); box-shadow: inset 2px 0 0 var(--tt-blue); }
+@media (prefers-reduced-motion: reduce) {
+  body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu,
+  body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a { transition: none !important; }
+}
+
+/* 5. Space down to the content */
+body:has(> .cbanner) .topbar { margin-bottom: 1rem; }
+
+/* 6. Mobile (TechNews hamburger below 56.25em): toggle on the frame's left edge, right under the hairline */
+@media (max-width: 56.1875em) {
+  body:has(> .cbanner) .topbar__inner { height: 3rem; }
+  body:has(> .cbanner) .navbar .navbar__toggle { margin: 0; padding: 0; height: 100%; }
+  body:has(> .cbanner) .navbar .navbar__toggle-inner,
+  body:has(> .cbanner) .navbar .navbar__toggle-inner::before,
+  body:has(> .cbanner) .navbar .navbar__toggle-inner::after { background-color: var(--tt-ivory); }
+  body:has(> .cbanner) .navbar .navbar__toggle.is-active .navbar__toggle-inner,
+  body:has(> .cbanner) .navbar .navbar__toggle.is-active .navbar__toggle-inner::before,
+  body:has(> .cbanner) .navbar .navbar__toggle.is-active .navbar__toggle-inner::after { background-color: var(--tt-blue-light); }
+  .navbar_mobile_overlay .navbar__menu li a,
+  .navbar_mobile_sidebar .navbar__menu li a { font-family: var(--tt-mono); letter-spacing: .06em; }
+}
+
+/* 7. Utility group: Archive / About / Contact, from the Publii Footer menu, copied into the main
+   bar by the menu script (Footer block 7) as li.nav-util. Pushed to the right, a hairline before
+   the group, same type at a quieter weight. Without the script the main bar is unchanged. */
+body:has(> .cbanner) .navbar .navbar__menu { width: 100%; }
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:not(.nav-util ~ .nav-util) { margin-left: auto; position: relative; }
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:not(.nav-util ~ .nav-util)::before {
+  content: ""; position: absolute; left: -1.25rem; top: 50%; height: 1.1em; transform: translateY(-50%);
+  border-left: 1px solid rgba(235,234,229,.25);
+}
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util > a { opacity: .7; }
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util > a:hover,
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active > a { opacity: 1; }
+@media (max-width: 56.1875em) {
+  /* hamburger: the utility items follow the main items after a divider */
+  .navbar_mobile_overlay .navbar__menu > li.nav-util:not(.nav-util ~ .nav-util),
+  .navbar_mobile_sidebar .navbar__menu > li.nav-util:not(.nav-util ~ .nav-util) { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(235,234,229,.2); }
+}
+
+/* 8. Listing pagination: the stock links are replaced by tiles (section 50, Footer block 8);
+   the stock .pagination stays as the no-JS fallback and is hidden once the tiles are built. */
+.pagination.tt-replaced { display: none; }
+
+/* 9. Repeated menu bar at the top of the footer: built by the menu script from the main bar,
+   top level only (Projects and CV & Résumé are landing pages): main group left, utility group right;
+   on a narrow screen the utility group wraps to its own line. */
+.tt-footnav {
+  flex: 0 0 100%; width: 100%; box-sizing: border-box;   /* .footer is a flex row (stock) */
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .9rem 2.5rem;
+  margin: 0; padding: 1.15rem 0;
+  /* Full-width Navy band like the top menu row (was two hairlines); the items keep the frame. */
+  background: var(--tt-navy);
+  box-shadow: 0 0 0 100vmax var(--tt-navy); clip-path: inset(0 -100vmax);
+}
+.tt-footnav ul {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 2.5rem;
+  margin: 0; padding: 0; list-style: none;
+}
+.tt-footnav li { margin: 0; padding: 0; }
+.tt-footnav a {
+  display: inline-block; padding-block: .35rem;
+  color: var(--tt-ivory); opacity: 1; text-decoration: none;
+  font: 600 .9375rem / 1 var(--tt-mono); letter-spacing: .07em; text-transform: uppercase;
+}
+.tt-footnav a:hover,
+.tt-footnav a:focus-visible,
+.tt-footnav li.active a { color: var(--tt-ivory); box-shadow: inset 0 -2px 0 var(--tt-blue); }
+.tt-footnav a:focus-visible { outline: 2px solid var(--tt-blue-light); outline-offset: 3px; }
+@media (max-width: 40em) {
+  .tt-footnav, .tt-footnav ul { gap: .9rem 1.5rem; }
+}
+
+/* 09 — Post and Page: Feature Colour title band, opening lines, then the featured image.
+   The same image mover handles both; without it, this section does not change their layout. */
+.has-cinline :is(.main.post, .main.page) > .content > .content__header {
+  margin-top: 0; padding-top: 2rem; padding-bottom: 2rem;
+  display: flex; flex-direction: column;
+}
+.has-cinline .main.post > .content > .content__header .u-header__meta { order: -1; margin: 0 0 1rem; }
+.has-cinline :is(.main.post, .main.page) .content__entry { padding-top: 2rem; }
+.has-cinline .main.page .content__entry { padding-top: 1.45rem; }
+.has-cinline .main.page .content__entry > [class*="fc-"] > :first-child { margin-top: 0; }
+.has-cinline :is(.main.post, .main.page) .content__entry .content__featured-image {
+  height: auto; margin: 2rem 0; overflow: visible; background: none; border: 0; box-shadow: none;
+  max-width: 72ch;   /* same width as the paragraphs (section 03) */
+}
+.has-cinline :is(.main.post, .main.page) .content__entry .content__featured-image > img {
+  width: 100%; height: auto; max-height: 32rem; object-fit: contain; margin: 0;
+  border: 0; border-radius: 0; box-shadow: none;
+}
+.has-cinline :is(.main.post, .main.page) .content__entry .content__featured-image > figcaption {
+  position: static; inset: auto; margin: .5rem 0 0; padding: 0;
+  background: none; color: var(--tt-shell); text-shadow: none;
+  font: .8rem/1.35 var(--body-font); text-align: left; opacity: .8;
+}
+.has-cinline .main.page .content__entry .content__featured-image { max-width: 38rem; margin: 2rem auto; }
+.has-cinline .main.page .content__entry .content__featured-image > img { max-height: 24rem; }
+
+/* 10 — Gutter art: blueprint grid, circuit traces (left) and the belt's three
+   rings as a construction figure (right), in sharp blue on one fixed layer behind the page. A mask fades it out over
+   the last 90px before the content column, so the column (and the gaps between cards) stays plain Night.
+   Opaque parts (banner, Navy bands, cards, panel) cover it. Shown only where gutters exist (1400px+).
+   Original inline SVG, no image files. Text in a CSS background image cannot use the site's web fonts, so the
+   two small labels use the system monospace. Column edge in this file: none (the art floats). */
+@media screen and (min-width: 1400px) {
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='1400' viewBox='0 0 560 1400'%3E%3Cg fill='none' stroke='%230070DC' stroke-opacity='.75' stroke-width='1.4'%3E%3Cpath d='M0 210H140L200 270H420'/%3E%3Cpath d='M200 270V520L260 580H520'/%3E%3Cpath d='M60 0V120L110 170H260'/%3E%3Cpath d='M0 760H90L150 820H360L410 870V1040'/%3E%3Cpath d='M150 820V980L210 1040H520'/%3E%3Cpath d='M300 1040V1220L250 1270H0'/%3E%3Cpath d='M420 270L470 220H560' stroke-dasharray='4 6'/%3E%3Cpath d='M360 820H560' stroke-dasharray='2 8'/%3E%3C/g%3E%3Ccircle cx='140' cy='210' r='3.5' fill='%230070DC'/%3E%3Ccircle cx='420' cy='270' r='3.5' fill='%230070DC'/%3E%3Ccircle cx='200' cy='520' r='3.5' fill='%230070DC'/%3E%3Ccircle cx='520' cy='580' r='4.5' fill='%230070DC'/%3E%3Ccircle cx='520' cy='580' r='8' fill='none' stroke='%230070DC' stroke-opacity='.8'/%3E%3Ccircle cx='260' cy='170' r='3.5' fill='%230070DC'/%3E%3Ccircle cx='360' cy='820' r='3.5' fill='%230070DC'/%3E%3Ccircle cx='410' cy='1040' r='3.5' fill='%230070DC'/%3E%3Ccircle cx='520' cy='1040' r='4.5' fill='%230070DC'/%3E%3Ccircle cx='520' cy='1040' r='8' fill='none' stroke='%230070DC' stroke-opacity='.8'/%3E%3Ccircle cx='300' cy='1220' r='3.5' fill='%230070DC'/%3E%3Crect x='232' y='182' width='56' height='22' fill='none' stroke='%230070DC' stroke-opacity='.8'/%3E%3Ctext x='260' y='197' text-anchor='middle' font-family='monospace' font-size='10' letter-spacing='1.5' fill='%230070DC'%3ESYS%3C/text%3E%3Crect x='232' y='952' width='56' height='22' fill='none' stroke='%230070DC' stroke-opacity='.8'/%3E%3Ctext x='260' y='967' text-anchor='middle' font-family='monospace' font-size='10' letter-spacing='1.5' fill='%230070DC'%3ENET%3C/text%3E%3C/svg%3E") left -70px top 140px / 440px auto no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='620' height='760' viewBox='40 0 340 420'%3E%3Cg transform='rotate(-34.8 192.8 210)' fill='none' stroke='%230070DC'%3E%3Cg stroke-opacity='.8' stroke-width='1.3'%3E%3Ccircle cx='126.1' cy='222' r='59.5'/%3E%3Ccircle cx='192.7' cy='210' r='59.5'/%3E%3Ccircle cx='259.5' cy='198' r='59.5'/%3E%3C/g%3E%3Cpath d='M30 239.3L355 180.7' stroke-opacity='.55' stroke-dasharray='3 5'/%3E%3Cg stroke-opacity='.5'%3E%3Ccircle cx='192.7' cy='210' r='96' stroke-dasharray='1 6'/%3E%3Cpath d='M126.1 300V330M259.5 276V306M126.1 318L259.5 294'/%3E%3C/g%3E%3Cg fill='%230070DC' fill-opacity='.9' stroke='none'%3E%3Ccircle cx='134' cy='220.6' r='7'/%3E%3Ccircle cx='192.7' cy='210' r='7'/%3E%3Ccircle cx='251.2' cy='199.5' r='7'/%3E%3C/g%3E%3C/g%3E%3Ctext x='300' y='400' font-family='monospace' font-size='7' letter-spacing='1' fill='%230070DC' fill-opacity='.85'%3EFIG. 1 %C2%B7 BELT%3C/text%3E%3C/svg%3E") right -30px center / 380px auto no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 .5H120M.5 0V120' stroke='%230070DC' stroke-opacity='.32' fill='none'/%3E%3Cpath d='M0 24.5H120M24.5 0V120' stroke='%230070DC' stroke-opacity='.12' fill='none'/%3E%3Cpath d='M0 48.5H120M48.5 0V120' stroke='%230070DC' stroke-opacity='.12' fill='none'/%3E%3Cpath d='M0 72.5H120M72.5 0V120' stroke='%230070DC' stroke-opacity='.12' fill='none'/%3E%3Cpath d='M0 96.5H120M96.5 0V120' stroke='%230070DC' stroke-opacity='.12' fill='none'/%3E%3C/svg%3E") center top / 120px 120px repeat;
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(50% - min(80rem, 100vw - 2rem) / 2 - 90px), transparent calc(50% - min(80rem, 100vw - 2rem) / 2), transparent calc(50% + min(80rem, 100vw - 2rem) / 2), #000 calc(50% + min(80rem, 100vw - 2rem) / 2 + 90px), #000 100%);
+            mask-image: linear-gradient(to right, #000 0, #000 calc(50% - min(80rem, 100vw - 2rem) / 2 - 90px), transparent calc(50% - min(80rem, 100vw - 2rem) / 2), transparent calc(50% + min(80rem, 100vw - 2rem) / 2), #000 calc(50% + min(80rem, 100vw - 2rem) / 2 + 90px), #000 100%);
+  }
+}
