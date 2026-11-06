@@ -5,12 +5,15 @@ One version number per Publii field, `1.xx`, raised on every change.
 | Field | Current |
 |---|---|
 | Custom CSS | 1.61 |
-| Custom HTML › Head | 1.03 |
+| Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
 | Custom HTML › Footer | 1.20 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**Head 1.04** (6 Nov 2026)
+- AdSense script removed (AdSense not in use).
 
 **Head 1.03** (6 Nov 2026)
 - AdSense publisher ID replaced with a placeholder; the version list removed from the header (each field carries its own number).

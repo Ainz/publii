@@ -9,13 +9,13 @@ Background: [Typotechtural, a new look for an old website](https://www.conram.it
 | File | Publii field | Version |
 |---|---|---|
 | `custom-css/custom-css.css` | Tools › Custom CSS | 1.61 |
-| `custom-html/head.html` | Tools › Custom HTML › Head | 1.03 |
+| `custom-html/head.html` | Tools › Custom HTML › Head | 1.04 |
 | `custom-html/body.html` | Tools › Custom HTML › Body | 1.04 |
 | `custom-html/footer.html` | Tools › Custom HTML › Footer | 1.20 |
 | `custom-html/copyright.html` | Theme Settings › Footer › Copyright text | 1.06 |
 | `tools/fix_headings.py` | – (run against a site's `db.sqlite`, Publii closed) | – |
 
-Each file is a complete field: replace the field's whole content. Head, Body and Copyright are written for conram.it (texts, links, menu labels, categories); treat them as a working example and adapt them to your own site. In `head.html`, replace `ca-pub-XXXXXXXXXXXXXXXX` with your own AdSense publisher ID, or remove the AdSense script.
+Each file is a complete field: replace the field's whole content. Head, Body and Copyright are written for conram.it (texts, links, menu labels, categories); treat them as a working example and adapt them to your own site.
 
 ## Requirements
 
