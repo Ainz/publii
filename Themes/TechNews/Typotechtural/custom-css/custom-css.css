@@ -1558,12 +1558,11 @@ li ul { margin-top: .2rem; }
     background: transparent;
     color: var(--tt-ebony);
     cursor: pointer;
-    transition: background-color .14s ease, color .14s ease;
+    transition: color .14s ease;
   }
-  /* the open section's arrow is sharp blue; hover fills the button sharp blue with a white arrow (4.8:1) */
+  /* arrows only, no button fill: the open section's arrow and a hovered arrow are sharp blue */
   .cv-toc .tt-toc li.is-open > .tt-toc__row .tt-toc__btn { color: var(--tt-blue); }
-  .cv-toc .tt-toc .tt-toc__btn:hover,
-  .cv-toc .tt-toc li.is-open > .tt-toc__row .tt-toc__btn:hover { background: var(--tt-blue); color: #fff; }
+  .cv-toc .tt-toc .tt-toc__btn:hover { background: transparent; color: var(--tt-blue); }
   .cv-toc .tt-toc li.is-open > .tt-toc__row .tt-toc__btn::before { transform: rotate(180deg); }
   .cv-toc .tt-toc__sub { display: none; padding-bottom: .4rem; }
   .cv-toc .tt-toc li.is-open > .tt-toc__sub { display: block; }
