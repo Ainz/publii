@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.61 · Custom CSS
+| CONRAM.IT · Typotechtural 1.62 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -2346,19 +2346,21 @@ body:has(> .cbanner) .navbar .navbar__menu > li > .is-separator {
   background: transparent; border-radius: 0;
 }
 
-/* 3. States: hover/focus and current Page keep Ivory text with a 2px sharp-blue rule at the foot of the row.
-   A parent whose submenu page is current gets no underline: the submenu's vertical marker says it. */
+/* 3. States, one system for the top bar, the footer bar and the dropdowns:
+   current = 3px light-blue rule (foot of the row in bars, left edge in dropdowns; a parent of the current page gets it too);
+   hover = light-blue text in bars, sharp-blue row in dropdowns; keyboard focus = Ivory ring. Hover never draws the rule. */
 body:has(> .cbanner) .navbar .navbar__menu > li > a:hover,
 body:has(> .cbanner) .navbar .navbar__menu > li > a:focus-visible,
 body:has(> .cbanner) .navbar .navbar__menu > li:hover > a,
 body:has(> .cbanner) .navbar .navbar__menu > li:hover > .is-separator[aria-haspopup="true"],
-body:has(> .cbanner) .navbar .navbar__menu > li:focus-within > .is-separator[aria-haspopup="true"] { color: var(--tt-ivory); opacity: 1; box-shadow: inset 0 -2px 0 var(--tt-blue); }
-body:has(> .cbanner) .navbar .navbar__menu > li > a:focus-visible { outline: 2px solid var(--tt-blue-light); outline-offset: 3px; }
-body:has(> .cbanner) .navbar .navbar__menu > li.active > a {
+body:has(> .cbanner) .navbar .navbar__menu > li:focus-within > .is-separator[aria-haspopup="true"] { color: var(--tt-blue-light); opacity: 1; box-shadow: none; }
+body:has(> .cbanner) .navbar .navbar__menu > li > a:focus-visible { outline: 2px solid var(--tt-ivory); outline-offset: 3px; }
+body:has(> .cbanner) .navbar .navbar__menu > li.active > a,
+body:has(> .cbanner) .navbar .navbar__menu > li.active-parent > a,
+body:has(> .cbanner) .navbar .navbar__menu > li.active-parent > .is-separator {
   color: var(--tt-ivory); opacity: 1;
-  box-shadow: inset 0 -2px 0 var(--tt-blue);
+  box-shadow: inset 0 -3px 0 var(--tt-blue-light);
 }
-body:has(> .cbanner) .navbar .navbar__menu > li.has-submenu.active > a { box-shadow: none; }
 
 /* 4. Dropdowns: Ebony panel, mono, blue hover; five or more items become two balanced columns.
    The items are flex rows, so the stock absolutely positioned submenu is anchored under the row;
@@ -2397,13 +2399,12 @@ body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a {
   transition: color .14s ease, background-color .14s ease;
 }
 body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li + li > a { border-top: 1px solid rgba(235, 234, 229, .12); }
-body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a:hover,
-body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a:focus-visible { color: var(--tt-ivory); background: rgba(0, 112, 220, .22); }
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a:hover { color: #fff; background: var(--tt-blue); }
 body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a:focus-visible {
   position: relative; z-index: 1;
-  outline: 2px solid var(--tt-blue-light); outline-offset: -3px;
+  outline: 2px solid var(--tt-ivory); outline-offset: -3px;
 }
-body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li.active > a { color: var(--tt-ivory); box-shadow: inset 2px 0 0 var(--tt-blue); }
+body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li.active > a { color: var(--tt-ivory); background: transparent; box-shadow: inset 3px 0 0 var(--tt-blue-light); }
 @media (prefers-reduced-motion: reduce) {
   body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu,
   body:has(> .cbanner) .navbar .navbar__menu > li > .navbar__submenu > li > a { transition: none !important; }
@@ -2470,9 +2471,9 @@ body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active > a { opacity: 1
   font: 600 .9375rem / 1 var(--tt-mono); letter-spacing: .07em; text-transform: uppercase;
 }
 .tt-footnav a:hover,
-.tt-footnav a:focus-visible,
-.tt-footnav li.active a { color: var(--tt-ivory); box-shadow: inset 0 -2px 0 var(--tt-blue); }
-.tt-footnav a:focus-visible { outline: 2px solid var(--tt-blue-light); outline-offset: 3px; }
+.tt-footnav a:focus-visible { color: var(--tt-blue-light); }
+.tt-footnav a:focus-visible { outline: 2px solid var(--tt-ivory); outline-offset: 3px; }
+.tt-footnav li.active > a { color: var(--tt-ivory); box-shadow: inset 0 -3px 0 var(--tt-blue-light); }
 @media (max-width: 40em) {
   .tt-footnav, .tt-footnav ul { gap: .9rem 1.5rem; }
 }
