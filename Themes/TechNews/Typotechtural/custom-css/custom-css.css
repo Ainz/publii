@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.63 · Custom CSS
+| CONRAM.IT · Typotechtural 1.64 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1505,7 +1505,7 @@ li ul { margin-top: .2rem; }
     max-height: calc(100vh - 4.25rem);
     max-height: calc(100dvh - 4.25rem);
     overflow: auto;
-    overscroll-behavior: contain;
+    overscroll-behavior: auto;   /* the wheel passes on to the page once the list ends (Footer closes the panel) */
     margin: 0;
     padding: .35rem 0;
     background: var(--tt-ivory);
@@ -1535,6 +1535,7 @@ li ul { margin-top: .2rem; }
     font-size: 1rem;
     text-decoration: none;
     overflow-wrap: anywhere;
+    -webkit-hyphens: manual; hyphens: manual;   /* whole words in the index; body text keeps auto hyphenation */
     transition: color .14s ease;
   }
   .main.page .content__entry .cv-toc .tt-toc > li > .tt-toc__row > a:not(.btn) { font-weight: 600; }
@@ -1572,6 +1573,14 @@ li ul { margin-top: .2rem; }
   .tt-index { display: none; }
   .cv-toc summary:focus-visible { outline: 2px solid var(--tt-ivory); outline-offset: -4px; }
   .cv-layout :target { scroll-margin-top: 4.5rem; }
+  /* phones: smaller bar text so the section name fits, tighter rows, narrower button column */
+  @media (max-width: 40em) {
+    .cv-toc summary { gap: .6rem; padding: .6rem .75rem; font-size: .8125rem; }
+    .cv-toc__now { padding-left: .6rem; font-size: .8125rem; }
+    .main.page .content__entry .cv-toc .tt-toc a:not(.btn):not([type="button"]):not([type="submit"]):not(button) { padding: .45rem .75rem; font-size: .9375rem; }
+    .main.page .content__entry .cv-toc .tt-toc__sub a:not(.btn) { padding: .3rem .75rem .3rem 1.2rem; }
+    .cv-toc .tt-toc__btn { flex-basis: 2.75rem; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .cv-toc__caret, .cv-toc .tt-toc__btn::before, .cv-toc .tt-toc__btn { transition: none; }
   }

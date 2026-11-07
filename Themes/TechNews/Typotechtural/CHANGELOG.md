@@ -4,13 +4,18 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.63 |
+| Custom CSS | 1.64 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
-| Custom HTML › Footer | 1.22 |
+| Custom HTML › Footer | 1.23 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.64, Footer 1.23** (7 Nov 2026)
+- CV index, scrolling: the open panel no longer swallows the mouse wheel (`overscroll-behavior: contain` removed). A long list scrolls itself first, then the page. Footer: the panel closes once the page has scrolled a quarter of the window; a single wheel notch keeps it open. Reopening lands on the current entry.
+- CV index, phones (≤ 40em): bar text 13px so the section name fits, entries 15px, tighter rows, 44px button column.
+- CV index: no automatic hyphenation in index entries at any width (body text unchanged).
 
 **CSS 1.63, Footer 1.22** (7 Nov 2026)
 - CV index as a navy bar the width of the text column, sticky at the top: label · count (Geist Mono 15px, as the top menu), the section being read, and an arrow. The old compact Ivory button disappeared against the page.

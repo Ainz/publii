@@ -1,4 +1,4 @@
-<!-- Typotechtural 1.22 · Footer: site scripts · credits and licence in <head> -->
+<!-- Typotechtural 1.23 · Footer: site scripts · credits and licence in <head> -->
 <!-- 0. Core (window.TT; must stay first) -->
 <script>
 /* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
@@ -756,13 +756,20 @@
   }
   track();
 
+  /* close the panel once the page itself has scrolled a quarter of the window (a wheel nudge keeps it open);
+     the settling scroll right after opening is ignored */
+  var openY = null, arm = 0;
   index.addEventListener('toggle', function () {
+    openY = null;
+    clearTimeout(arm);
     if (!index.open) return;
     var a = toc.reveal();
     if (a && a.scrollIntoView) a.scrollIntoView({ block: 'nearest' });
+    arm = setTimeout(function () { openY = window.scrollY; }, 350);
   });
   var raf = 0;
   window.addEventListener('scroll', function () {
+    if (index.open && openY !== null && Math.abs(window.scrollY - openY) > window.innerHeight / 4) index.open = false;
     if (raf) return;
     raf = requestAnimationFrame(function () { raf = 0; track(); });
   }, { passive: true });
