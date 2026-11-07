@@ -593,6 +593,7 @@
     if (!a || a.tagName.toLowerCase() === 'span') return;
     var n = item(a);
     if (li.classList.contains('active')) n.classList.add('active');
+    if (li.classList.contains('active-parent')) n.classList.add('active-parent');
     left.appendChild(n);
   });
   util.forEach(function (a) { right.appendChild(item(a)); });
