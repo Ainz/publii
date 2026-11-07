@@ -1,4 +1,4 @@
-<!-- Typotechtural 1.21 · Footer: site scripts · credits and licence in <head> -->
+<!-- Typotechtural 1.22 · Footer: site scripts · credits and licence in <head> -->
 <!-- 0. Core (window.TT; must stay first) -->
 <script>
 /* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
@@ -715,7 +715,7 @@
 <!-- 9. CV index -->
 <script>
 /* CV index: replaces .tt-index (or a legacy #cv-toc) with a sticky two-level index from the headings.
-   Master CV pages index H2/H3, older CV pages H3/H4. */
+   Master CV pages index H2/H3, older CV pages H3/H4. The bar shows label · count, the section being read, and an arrow. */
 (function () {
   var TT = window.TT;
   if (!TT || !TT.toc) return;
@@ -740,8 +740,21 @@
   var levels = root.querySelector('.cv-section > h2') ? ['H2', 'H3'] : ['H3', 'H4'];
   var toc = TT.toc(root, levels, '#cv-toc');
   if (!toc.count) { index.parentNode.removeChild(index); return; }
-  summary.textContent = label + ' · ' + toc.count;
+  var now = TT.el('span', 'cv-toc__now');
+  summary.appendChild(TT.el('span', 'cv-toc__label', label + ' · ' + toc.count));
+  summary.appendChild(now);
+  var caret = TT.el('span', 'cv-toc__caret');
+  caret.setAttribute('aria-hidden', 'true');
+  summary.appendChild(caret);
   nav.appendChild(toc.el);
+
+  /* the section being read: the section of the current entry, the same one the panel marks */
+  function track() {
+    var a = toc.mark(), li = a && a.closest('.tt-toc > li'), s = li && li.querySelector('.tt-toc__row > a');
+    var t = s && s.firstChild ? s.firstChild.nodeValue : '';
+    if (now.textContent !== t) now.textContent = t;
+  }
+  track();
 
   index.addEventListener('toggle', function () {
     if (!index.open) return;
@@ -750,8 +763,8 @@
   });
   var raf = 0;
   window.addEventListener('scroll', function () {
-    if (!index.open || raf) return;
-    raf = requestAnimationFrame(function () { raf = 0; toc.mark(); });
+    if (raf) return;
+    raf = requestAnimationFrame(function () { raf = 0; track(); });
   }, { passive: true });
   document.addEventListener('click', function (event) {
     if (!index.open) return;

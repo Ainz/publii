@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.62 · Custom CSS
+| CONRAM.IT · Typotechtural 1.63 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1420,7 +1420,9 @@ li ul { margin-top: .2rem; }
   text-align: center;
 }
 
-/* CV index: sticky compact control with an overlay panel. */
+/* CV index: a navy bar the width of the text column, sticky at the top, with an overlay panel.
+   Bar: label · count | the section being read | arrow. Panel: sections and entries; you-are-here = 3px sharp-blue rule.
+   Arrows are drawn triangles (not glyphs), so they rotate around their own centre without shifting. */
 @media screen {
   /* The shared Page panel clips overflow. Remove that clip only for pages containing the long CV layout,
      so sticky positioning and the floating index panel can use the viewport. */
@@ -1428,13 +1430,13 @@ li ul { margin-top: .2rem; }
 
   .cv-toc {
     position: sticky;
-    top: .75rem;
+    top: 0;
     z-index: 30;
     display: block;
-    width: max-content;
+    width: 100%;
     max-width: 100%;
     align-self: start;
-    justify-self: start;
+    justify-self: stretch;
     margin: 0 0 1.15rem;
     padding: 0;
     background: transparent;
@@ -1447,37 +1449,58 @@ li ul { margin-top: .2rem; }
   }
 
   .cv-toc summary {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: .45rem;
-    padding: .28rem .48rem;
-    background: var(--tt-ivory);
-    color: var(--tt-ebony);
-    border: 1px solid rgba(36,39,41,.25);
+    gap: .9rem;
+    box-sizing: border-box;
+    width: 100%;
+    padding: .7rem .9rem;
+    background: var(--tt-navy);
+    color: var(--tt-ivory);
+    border: 0;
     border-radius: 0;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
     cursor: pointer;
-    font: 600 .7rem/1.25 var(--tt-mono);
-    letter-spacing: .08em;
+    font: 600 .9375rem/1 var(--tt-mono);
+    letter-spacing: .07em;
     list-style: none;
     text-transform: uppercase;
   }
   .cv-toc summary::-webkit-details-marker { display: none; }
-  .cv-toc summary::after {
-    color: var(--tt-blue);
-    content: "▾";
-    font: 500 .85rem/1 var(--tt-mono);
+  .cv-toc summary:hover { box-shadow: inset 0 -3px 0 var(--tt-blue-light), 0 6px 14px rgba(0, 0, 0, .12); }
+  .cv-toc__label { flex: 0 0 auto; }
+  .cv-toc__now {
+    flex: 1 1 auto; min-width: 0;
+    padding-left: .9rem;
+    border-left: 1px solid rgba(235, 234, 229, .35);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: .875rem; font-weight: 400; letter-spacing: .03em; text-transform: none;
+    opacity: .92;
   }
-  .cv-toc[open] summary::after { content: "▴"; }
+  .cv-toc__now:empty { display: none; }
+  /* arrows: 13.3 × 10px drawn triangles in currentColor */
+  .cv-toc__caret,
+  .cv-toc .tt-toc__btn::before {
+    content: "";
+    display: block;
+    width: .8333rem; height: .625rem;
+    background: currentColor;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: 50% 50%;
+    transition: transform .18s ease-out;
+  }
+  .cv-toc__caret { flex: 0 0 auto; margin-left: auto; }
+  .cv-toc[open] .cv-toc__caret { transform: rotate(180deg); }
 
   .cv-toc:not([open]) > .cv-toc__nav { display: none; }
 
   .cv-toc__nav {
     position: absolute;
-    top: calc(100% + .3rem);
+    top: 100%;
     left: 0;
     z-index: 1;
     box-sizing: border-box;
-    width: min(26rem, calc(100vw - 2rem));
+    width: 100%;
     max-width: calc(100vw - 2rem);
     max-height: calc(100vh - 4.25rem);
     max-height: calc(100dvh - 4.25rem);
@@ -1488,12 +1511,16 @@ li ul { margin-top: .2rem; }
     background: var(--tt-ivory);
     color: var(--tt-ebony);
     border: 1px solid rgba(36,39,41,.25);
+    border-top: 0;
     border-radius: 0;
     box-shadow: none;
   }
   /* Generated index (Footer TT.toc): sections, each with a count and a fold-out button; one open at a time. */
   .cv-toc .tt-toc,
   .cv-toc .tt-toc ol { margin: 0; padding: 0; list-style: none; }
+  /* full panel width: overrides the 72ch reading measure on lists in Page content */
+  .main.page .content__entry .cv-toc .tt-toc,
+  .main.page .content__entry .cv-toc .tt-toc ol { width: 100%; max-width: none; }
   .cv-toc .tt-toc li { margin: 0; line-height: 1.3; }
   .cv-toc .tt-toc > li + li { border-top: 1px solid rgba(36,39,41,.12); }
   .cv-toc .tt-toc__row { display: flex; align-items: stretch; }
@@ -1503,18 +1530,26 @@ li ul { margin-top: .2rem; }
     min-width: 0;
     padding: .5rem .9rem;
     border: 0;
+    background: transparent;
     color: var(--tt-ebony);
-    font-size: .82rem;
+    font-size: 1rem;
     text-decoration: none;
     overflow-wrap: anywhere;
+    transition: color .14s ease;
   }
-  .main.page .content__entry .cv-toc .tt-toc > li > .tt-toc__row > a:not(.btn) { font-size: .9rem; font-weight: 600; }
+  .main.page .content__entry .cv-toc .tt-toc > li > .tt-toc__row > a:not(.btn) { font-weight: 600; }
   .main.page .content__entry .cv-toc .tt-toc__sub a:not(.btn) { padding: .32rem .9rem .32rem 1.7rem; }
-  .main.page .content__entry .cv-toc .tt-toc a:not(.btn):hover { background: var(--tt-blue-tint); text-decoration: none; }
-  .main.page .content__entry .cv-toc .tt-toc a.is-current { background: rgba(0, 112, 220, .07); box-shadow: inset 2px 0 0 var(--tt-blue); }
+  /* hover: sharp-blue text, no fill */
+  .main.page .content__entry .cv-toc .tt-toc a:not(.btn):hover { background: transparent; color: var(--tt-blue); text-decoration: none; }
+  /* you are here: the current entry and its section get a 3px sharp-blue rule; the entry is bold */
+  .main.page .content__entry .cv-toc .tt-toc a.is-current { background: transparent; box-shadow: inset 3px 0 0 var(--tt-blue); font-weight: 700; }
+  .main.page .content__entry .cv-toc .tt-toc > li:has(a.is-current) > .tt-toc__row > a:not(.btn) { box-shadow: inset 3px 0 0 var(--tt-blue); }
   .cv-toc .tt-toc__n { margin-left: .35rem; font: 500 .72rem/1 var(--tt-mono); opacity: .55; }
   .cv-toc .tt-toc__btn {
-    flex: 0 0 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 3.2rem;
     margin: 0;
     padding: 0;
     border: 0;
@@ -1523,10 +1558,12 @@ li ul { margin-top: .2rem; }
     background: transparent;
     color: var(--tt-ebony);
     cursor: pointer;
-    font: 500 .95rem/1 var(--tt-mono);
+    transition: background-color .14s ease, color .14s ease;
   }
-  .cv-toc .tt-toc__btn:hover { background: var(--tt-blue-tint); }
-  .cv-toc .tt-toc__btn::before { content: "\25BE"; display: inline-block; transition: transform .18s ease-out; }
+  /* the open section's arrow is sharp blue; hover fills the button sharp blue with a white arrow (4.8:1) */
+  .cv-toc .tt-toc li.is-open > .tt-toc__row .tt-toc__btn { color: var(--tt-blue); }
+  .cv-toc .tt-toc .tt-toc__btn:hover,
+  .cv-toc .tt-toc li.is-open > .tt-toc__row .tt-toc__btn:hover { background: var(--tt-blue); color: #fff; }
   .cv-toc .tt-toc li.is-open > .tt-toc__row .tt-toc__btn::before { transform: rotate(180deg); }
   .cv-toc .tt-toc__sub { display: none; padding-bottom: .4rem; }
   .cv-toc .tt-toc li.is-open > .tt-toc__sub { display: block; }
@@ -1534,9 +1571,11 @@ li ul { margin-top: .2rem; }
   .cv-toc .tt-toc__btn:focus-visible { outline: 2px solid var(--tt-blue); outline-offset: -2px; }
   /* The new short Page snippet (<div class="tt-index">Label</div>) stays hidden until the script replaces it. */
   .tt-index { display: none; }
-  .cv-toc a:focus-visible,
-  .cv-toc summary:focus-visible { outline: 2px solid var(--tt-blue); outline-offset: 3px; }
+  .cv-toc summary:focus-visible { outline: 2px solid var(--tt-ivory); outline-offset: -4px; }
   .cv-layout :target { scroll-margin-top: 4.5rem; }
+  @media (prefers-reduced-motion: reduce) {
+    .cv-toc__caret, .cv-toc .tt-toc__btn::before, .cv-toc .tt-toc__btn { transition: none; }
+  }
 }
 @media print { .cv-toc { display: none !important; } }
 /* 05 — Native Post navigation and related cards (stock TechNews markup) */

@@ -4,13 +4,20 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.62 |
+| Custom CSS | 1.63 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
-| Custom HTML › Footer | 1.21 |
+| Custom HTML › Footer | 1.22 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.63, Footer 1.22** (7 Nov 2026)
+- CV index as a navy bar the width of the text column, sticky at the top: label · count (Geist Mono 15px, as the top menu), the section being read, and an arrow. The old compact Ivory button disappeared against the page.
+- Panel: full bar width, entries 1rem (was .82), hover = sharp-blue text without fill; current entry and its section get a 3px sharp-blue rule, the entry in bold (was 2px with a 7% tint).
+- Fold-out buttons: hover fills the button sharp blue with a white arrow; the open section's arrow is sharp blue.
+- Arrows are drawn 13.3 × 10px triangles instead of font glyphs, so they rotate around their own centre (the glyph shifted a few px when turned).
+- Footer script: the bar tracks the section being read on every scroll (it used to update only while open).
 
 **CSS 1.62, Footer 1.21** (7 Nov 2026)
 - Menu states, one system for the top bar, the footer bar and the dropdowns (visitor feedback: the current-page marker was too faint and the two Home links disagreed).
