@@ -1,4 +1,4 @@
-<!-- Typotechtural 1.20 · Footer: site scripts · credits and licence in <head> -->
+<!-- Typotechtural 1.21 · Footer: site scripts · credits and licence in <head> -->
 <!-- 0. Core (window.TT; must stay first) -->
 <script>
 /* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
@@ -569,6 +569,15 @@
     });
   }
 
+  /* 1b. current page: Publii doesn't flag the front-page link, so mark every top-level match here */
+  Array.prototype.forEach.call(main.children, function (li) {
+    if (here(li.querySelector(':scope > a'))) li.classList.add('active');
+  });
+  function current(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('li.active > a'), function (a) { a.setAttribute('aria-current', 'page'); });
+  }
+  current(main);
+
   /* 2. footer bar: both groups, top level only */
   var footer = document.querySelector('.footer');
   if (!footer) return;
@@ -584,11 +593,13 @@
     if (!a || a.tagName.toLowerCase() === 'span') return;
     var n = item(a);
     if (li.classList.contains('active')) n.classList.add('active');
+    if (li.classList.contains('active-parent')) n.classList.add('active-parent');
     left.appendChild(n);
   });
   util.forEach(function (a) { right.appendChild(item(a)); });
   bar.appendChild(left);
   if (right.children.length) bar.appendChild(right);
+  current(bar);
   if (subNav) subNav.parentNode.replaceChild(bar, subNav);
   else footer.insertBefore(bar, footer.firstChild);
 })();

@@ -4,13 +4,22 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.61 |
+| Custom CSS | 1.62 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
-| Custom HTML › Footer | 1.20 |
+| Custom HTML › Footer | 1.21 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.62, Footer 1.21** (7 Nov 2026)
+- Menu states, one system for the top bar, the footer bar and the dropdowns (visitor feedback: the current-page marker was too faint and the two Home links disagreed).
+- Current page: 3px light-blue `#5AA9FF` rule, at the foot of the row in the bars (5.1:1 on navy) and on the left edge in dropdowns (6.1:1 on ebony). Was 2px sharp blue, 2.6:1.
+- Parent of the current page (e.g. Projects on a project page) now gets the same rule, in the top bar and the footer bar. Previously no marker.
+- Hover: light-blue text in the bars, no rule; in dropdowns a sharp-blue row with white text (4.8:1). Hover no longer looks like "current".
+- Keyboard focus: Ivory ring everywhere (was light blue).
+- Footer script: the front-page Home link is marked current in the top bar too (Publii doesn't flag it); current links get `aria-current="page"` in both bars.
+- Not changed: the phone sidebar's markers.
 
 **Head 1.04** (6 Nov 2026)
 - AdSense script removed (AdSense not in use).
