@@ -4,13 +4,16 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.64 |
+| Custom CSS | 1.65 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
 | Custom HTML › Footer | 1.23 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.65** (8 Nov 2026)
+- Cookie badge (Publii GDPR): silver with an ebony icon instead of Publii's `#1089FF`; sharp blue with a white icon on hover/focus. 44px, 14px from the corner; phones (≤ 40em) 36px, 8px from the corner, 70% until touched, so it no longer covers text (audit D5).
 
 **CSS 1.64, Footer 1.23** (7 Nov 2026)
 - CV index, scrolling: the open panel no longer swallows the mouse wheel (`overscroll-behavior: contain` removed). A long list scrolls itself first, then the page. Footer: the panel closes once the page has scrolled a quarter of the window; a single wheel notch keeps it open. Reopening lands on the current entry.

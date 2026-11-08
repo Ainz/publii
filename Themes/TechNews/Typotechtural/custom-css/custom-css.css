@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.64 · Custom CSS
+| CONRAM.IT · Typotechtural 1.65 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -2568,4 +2568,27 @@ body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active > a { opacity: 1
     -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(50% - min(80rem, 100vw - 2rem) / 2 - 90px), transparent calc(50% - min(80rem, 100vw - 2rem) / 2), transparent calc(50% + min(80rem, 100vw - 2rem) / 2), #000 calc(50% + min(80rem, 100vw - 2rem) / 2 + 90px), #000 100%);
             mask-image: linear-gradient(to right, #000 0, #000 calc(50% - min(80rem, 100vw - 2rem) / 2 - 90px), transparent calc(50% - min(80rem, 100vw - 2rem) / 2), transparent calc(50% + min(80rem, 100vw - 2rem) / 2), #000 calc(50% + min(80rem, 100vw - 2rem) / 2 + 90px), #000 100%);
   }
+}
+
+/* 11 — Cookie badge (Publii GDPR): silver site furniture instead of Publii's #1089FF.
+   Sharp blue only on hover/focus, as everywhere else. 44px in the corner; on phones 36px, closer to the edge
+   and at 70% until touched, so it sits in the margin instead of over the text. */
+.pcb {
+  --pcb-badge-bg: var(--tt-silver);
+  --pcb-badge-color: var(--tt-ebony);
+  --pcb-badge-bg-hover: var(--tt-blue);
+  --pcb-badge-color-hover: #fff;
+}
+.pcb .pcb__badge {
+  left: 14px; bottom: 14px;
+  padding: 9px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+  transition: background-color .15s ease, color .15s ease, opacity .15s ease;
+}
+.pcb .pcb__badge svg { display: block; width: 26px; height: 26px; }
+.pcb .pcb__badge:hover,
+.pcb .pcb__badge:focus-visible { opacity: 1; }
+@media (max-width: 40em) {
+  .pcb .pcb__badge { left: 8px; bottom: 8px; padding: 7px; opacity: .7; }
+  .pcb .pcb__badge svg { width: 22px; height: 22px; }
 }
