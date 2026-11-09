@@ -42,7 +42,7 @@ Head, Body and Copyright are written for conram.it (texts, links, menu labels); 
 
 ## Also on conram.it
 
-- [Gjallarform](https://github.com/Ainz/gjallarform): the site's contact form, a separate PHP project (Publii sites are static, so the form runs as its own small application on the same server).
+- [Gjallarform](https://github.com/Ainz/gjallarform): the site's contact form, a separate project (Publii sites are static, so the form runs as its own small application next to the site).
 - Publii plugins in use: External Links (icons on outbound links) and Email Address Obfuscation, both from the [Publii Marketplace](https://marketplace.getpublii.com/).
 
 ## Versioning
