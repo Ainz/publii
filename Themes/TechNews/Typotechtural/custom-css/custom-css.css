@@ -1,12 +1,12 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.65 · Custom CSS
+| CONRAM.IT · Typotechtural 1.66 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
 | Authors: Rikard Malmborg, Claude (Anthropic),
 |          ChatGPT (OpenAI)
 | Web:     https://www.conram.it
-| Code:    https://github.com/ainz
+| Code:    https://github.com/Ainz/publii
 | Contact: dev [at] conram.it
 +--------------------------------------------------------+
 | Copyright (C) 2026 Rikard Malmborg / CONRAM.IT
@@ -1333,13 +1333,14 @@ li ul { margin-top: .2rem; }
   line-height: 1.25;
 }
 .cv-layout.cv-doc h2 + h3 { margin-top: .9rem; padding-top: 0; border-top: 0; }
-.cv-layout.cv-doc h4 {
-  margin: 1.1rem 0 .3rem;
-  font: 600 .72rem/1.3 var(--tt-mono);
-  letter-spacing: .08em;
+/* Specificity raised to beat the content heading rule (.main.page .content__entry h4) */
+.main.page .content__entry .cv-layout.cv-doc h4 {
+  margin: 1.4rem 0 .35rem;
+  font: 600 .8rem/1.3 var(--tt-mono);
+  letter-spacing: .06em;
   text-transform: uppercase;
-  opacity: .7;
-  transform: none;
+  color: var(--tt-navy);
+  opacity: 1;
 }
 .cv-layout .cv-role {
   display: flex;
@@ -1381,7 +1382,7 @@ li ul { margin-top: .2rem; }
   .cv-layout .cv-desc li { margin: .06rem 0; }
   .cv-layout.cv-doc h2 { font-size: 13pt; margin: 10pt 0 4pt; page-break-after: avoid; }
   .cv-layout.cv-doc h3 { font-size: 11.5pt; margin: 8pt 0 3pt; padding-top: 5pt; page-break-after: avoid; }
-  .cv-layout.cv-doc h4 { font-size: 7.5pt; margin: 5pt 0 2pt; page-break-after: avoid; }
+  .main.page .content__entry .cv-layout.cv-doc h4 { font-size: 8.5pt; margin: 6pt 0 2pt; page-break-after: avoid; }
   .main-content, .content, main, .main, .content__entry {
     width: 100% !important;
     max-width: none !important;

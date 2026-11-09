@@ -4,13 +4,17 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.65 |
+| Custom CSS | 1.66 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
 | Custom HTML › Footer | 1.23 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.66** (9 Nov 2026)
+- CV sub-headings (`.cv-doc h4`, e.g. "Teknisk miljö") lost to the content heading rule `.main.page .content__entry h4` (Exo, −0.025em tracking) and showed as squeezed, faded capitals. Specificity raised: Geist Mono labels in navy, full opacity, .8rem, more space above. Print 7.5pt → 8.5pt.
+- Header "Code:" line points at this repository.
 
 **CSS 1.65** (8 Nov 2026)
 - Cookie badge (Publii GDPR): silver with an ebony icon instead of Publii's `#1089FF`; sharp blue with a white icon on hover/focus. 44px, 14px from the corner; phones (≤ 40em) 36px, 8px from the corner, 70% until touched, so it no longer covers text (audit D5).
