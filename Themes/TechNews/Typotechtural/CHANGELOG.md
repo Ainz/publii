@@ -4,13 +4,19 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.66 |
+| Custom CSS | 1.67 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
-| Custom HTML › Footer | 1.23 |
+| Custom HTML › Footer | 1.24 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.67, Footer 1.24** (16 Nov 2026)
+- Résumé pages: two or more `div.tt-track` (id + H2) become tabs (Footer block 10). Tab label from `data-tab`, else the H2. A hash naming a track or an element inside it opens that track; switching updates the hash. Without the script the tracks follow each other.
+- Tab bar styled as the CV index bar (navy, Geist Mono 15px/600 caps, 37px, shadow); three equal tabs, centred text. Hover as the menu dropdowns (sharp-blue fill, white text), current = 3px light-blue rule, focus = Ivory ring. The theme's black `button:focus/:active` fill is overridden. Below 50em (phones, tablets upright): stacked tabs, rule on the left edge.
+- INNEHÅLL (label from `data-toc`) hangs under the current tab and lists that track's H3s in a panel styled as the CV index panel; hover = the CV index bar's light-blue rule. Closes on choice, outside click or Esc.
+- Print: the open track only, no tab bar.
 
 **CSS 1.66** (9 Nov 2026)
 - CV sub-headings (`.cv-doc h4`, e.g. "Teknisk miljö") lost to the content heading rule `.main.page .content__entry h4` (Exo, −0.025em tracking) and showed as squeezed, faded capitals. Specificity raised: Geist Mono labels in navy, full opacity, .8rem, more space above. Print 7.5pt → 8.5pt.

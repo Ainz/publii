@@ -25,10 +25,10 @@ Useful documentation:
 
 | File | Publii field | Version |
 |---|---|---|
-| `custom-css/custom-css.css` | Tools › Custom CSS | 1.66 |
+| `custom-css/custom-css.css` | Tools › Custom CSS | 1.67 |
 | `custom-html/head.html` | Tools › Custom HTML › Head | 1.04 |
 | `custom-html/body.html` | Tools › Custom HTML › Body | 1.04 |
-| `custom-html/footer.html` | Tools › Custom HTML › Footer | 1.23 |
+| `custom-html/footer.html` | Tools › Custom HTML › Footer | 1.24 |
 | `custom-html/copyright.html` | Theme Settings › Footer › Copyright text | 1.06 |
 
 Each file is a complete field: replace the field's whole content, then regenerate the preview. Note that "Footer" appears twice in Publii: the scripts go in **Tools › Custom HTML › Footer**, the link columns in **Theme Settings › Footer › Copyright text**.

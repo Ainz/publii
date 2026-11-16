@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.66 · Custom CSS
+| CONRAM.IT · Typotechtural 1.67 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1587,6 +1587,91 @@ li ul { margin-top: .2rem; }
   }
 }
 @media print { .cv-toc { display: none !important; } }
+
+/* Résumé tracks (cv-*-resume): three .tt-track blocks become tabs (Footer block 10).
+   Bar = the CV index bar (navy, Geist Mono 15px/600 caps .07em, 37px, shadow); three equal tabs, text centred.
+   Tab hover = dropdown hover (sharp-blue fill, white text); current = 3px light-blue rule at the foot; focus = Ivory ring.
+   INNEHÅLL hangs centred under the current tab; hover = the CV index bar's 3px light-blue rule; its panel = the CV index panel.
+   Without the script the three tracks simply follow each other. Print: the open track only, no bar. */
+@media screen {
+  .tt-tabs { position: relative; margin: 1.6rem 0 2.4rem; background: var(--tt-navy); box-shadow: 0 6px 14px rgba(0, 0, 0, .12); }
+  .tt-tabs__list { display: flex; margin: 0; padding: 0; }
+  /* .tt-tabs prefix: the theme paints button:hover/:focus/:active black */
+  .tt-tabs .tt-tabs__tab,
+  .tt-tabs .tt-tabs__toc {
+    all: unset;
+    box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font: 600 .9375rem/1 var(--tt-mono);
+    letter-spacing: .07em; text-transform: uppercase;
+    color: var(--tt-ivory); background: transparent;
+    transition: color .14s ease, background-color .14s ease, box-shadow .14s ease;
+  }
+  .tt-tabs .tt-tabs__tab { flex: 1 1 0; min-width: 0; padding: .7rem .25rem; text-align: center; }
+  .tt-tabs .tt-tabs__tab:focus,
+  .tt-tabs .tt-tabs__tab:active { color: var(--tt-ivory); background: transparent; }
+  .tt-tabs .tt-tabs__tab + .tt-tabs__tab { border-left: 1px solid rgba(235, 234, 229, .35); }
+  .tt-tabs .tt-tabs__tab:hover { color: #fff; background: var(--tt-blue); }
+  .tt-tabs .tt-tabs__tab[aria-selected="true"] { box-shadow: inset 0 -3px 0 var(--tt-blue-light); }
+  .tt-tabs .tt-tabs__tab:focus-visible { outline: 2px solid var(--tt-ivory); outline-offset: -4px; }
+
+  .tt-tabs .tt-tabs__toc {
+    position: absolute; top: 100%; z-index: 21;
+    gap: .45rem; height: 1.5rem; padding: 0 .75rem;
+    font-size: .6875rem;
+    background: var(--tt-navy);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
+  }
+  .tt-tabs .tt-tabs__toc:focus,
+  .tt-tabs .tt-tabs__toc:active { color: var(--tt-ivory); background: var(--tt-navy); }
+  .tt-tabs .tt-tabs__toc:hover { color: var(--tt-ivory); background: var(--tt-navy); box-shadow: inset 0 -3px 0 var(--tt-blue-light), 0 6px 14px rgba(0, 0, 0, .12); }
+  .tt-tabs .tt-tabs__toc:focus-visible { outline: 2px solid var(--tt-ivory); outline-offset: -3px; }
+  .tt-tabs__toc::after {
+    content: ""; width: .5rem; height: .375rem;
+    background: currentColor; clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transition: transform .18s ease-out;
+  }
+  .tt-tabs.is-open .tt-tabs__toc::after { transform: rotate(180deg); }
+
+  .tt-tabs__nav {
+    position: absolute; top: calc(100% + 1.5rem); z-index: 20;
+    box-sizing: border-box; margin: 0; padding: .35rem 0; list-style: none;
+    background: var(--tt-ivory); color: var(--tt-ebony);
+    border: 1px solid rgba(36, 39, 41, .25); border-top: 0;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
+  }
+  .tt-tabs:not(.is-open) .tt-tabs__nav { display: none; }
+  .main.page .content__entry .tt-tabs__nav li { margin: 0; }
+  .tt-tabs__nav li + li { border-top: 1px solid rgba(36, 39, 41, .12); }
+  .main.page .content__entry .tt-tabs__nav a:not(.btn):not([type="button"]):not([type="submit"]):not(button) {
+    display: block; padding: .5rem .9rem;
+    font: 600 .9375rem/1.3 var(--body-font);
+    color: var(--tt-ebony); background: transparent; text-decoration: none;
+  }
+  .main.page .content__entry .tt-tabs__nav a:not(.btn):hover { color: var(--tt-blue); background: transparent; text-decoration: none; }
+  .main.page .content__entry .tt-tabs__nav a.is-current { box-shadow: inset 3px 0 0 var(--tt-blue); font-weight: 700; }
+  .tt-tabs__nav a:focus-visible { outline: 2px solid var(--tt-blue); outline-offset: -2px; }
+
+  .tt-track[hidden] { display: none !important; }
+  .tt-track h3 { scroll-margin-top: 1rem; }
+
+  /* below 50em (phones, tablets upright) three equal tabs would wrap: stacked, the current rule on the left edge as in the dropdowns */
+  @media (max-width: 50em) {
+    .tt-tabs { margin-bottom: 2.6rem; }
+    .tt-tabs__list { flex-direction: column; }
+    .tt-tabs .tt-tabs__tab { flex: 0 0 auto; justify-content: flex-start; text-align: left; padding: .6rem .75rem; font-size: .8125rem; }
+    .tt-tabs .tt-tabs__tab + .tt-tabs__tab { border-left: 0; border-top: 1px solid rgba(235, 234, 229, .2); }
+    .tt-tabs .tt-tabs__tab[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--tt-blue-light); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tt-tabs .tt-tabs__tab, .tt-tabs .tt-tabs__toc, .tt-tabs__toc::after { transition: none; }
+  }
+}
+@media print {
+  .tt-tabs { display: none !important; }
+  .tt-track[hidden] { display: none !important; }
+}
 /* 05 — Native Post navigation and related cards (stock TechNews markup) */
 /* Share controls and the repeated end-of-article tag cloud are absent from the reference. */
 /* Removed everywhere and at every width (no sidebar to host them). Tags stay in the DOM for accent rules. */

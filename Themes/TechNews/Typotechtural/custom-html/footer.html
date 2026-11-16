@@ -1,4 +1,4 @@
-<!-- Typotechtural 1.23 · Footer: site scripts · credits and licence in <head> -->
+<!-- Typotechtural 1.24 · Footer: site scripts · credits and licence in <head> -->
 <!-- 0. Core (window.TT; must stay first) -->
 <script>
 /* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
@@ -781,5 +781,143 @@
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape' && index.open) { index.open = false; summary.focus(); }
   });
+})();
+</script>
+<!-- 10. Résumé tracks -->
+<script>
+/* Résumé tracks: two or more div.tt-track (each with an id and an H2) become tabs above the first one.
+   Tab label: data-tab on the track, else its H2. INNEHÅLL: data-toc on the first track (default "Innehåll").
+   A hash naming a track, or an element inside one, opens that track; switching updates the hash.
+   INNEHÅLL hangs under the current tab and lists that track's H3s. Without this script all tracks show. */
+(function () {
+  var TT = window.TT;
+  var tracks = [].slice.call(document.querySelectorAll('.content__entry .tt-track[id]'));
+  if (!TT || !TT.el || tracks.length < 2) return;
+
+  function slug(s) {
+    return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+  var label = (tracks[0].getAttribute('data-toc') || 'Innehåll').trim();
+  var wrap = TT.el('div', 'tt-tabs');
+  var list = TT.el('div', 'tt-tabs__list');
+  list.setAttribute('role', 'tablist');
+  var toc = TT.el('button', 'tt-tabs__toc', label);
+  toc.type = 'button';
+  toc.setAttribute('aria-controls', 'tt-tabs-nav');
+  toc.setAttribute('aria-expanded', 'false');
+  var nav = TT.el('ol', 'tt-tabs__nav');
+  nav.id = 'tt-tabs-nav';
+  nav.setAttribute('aria-label', label);
+  wrap.appendChild(list);
+  wrap.appendChild(toc);
+  wrap.appendChild(nav);
+
+  var cur = -1;
+  var tabs = tracks.map(function (t, i) {
+    var h2 = t.querySelector('h2');
+    var b = TT.el('button', 'tt-tabs__tab', (t.getAttribute('data-tab') || (h2 ? h2.textContent : t.id)).trim());
+    b.type = 'button';
+    b.id = 'tab-' + t.id;
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-controls', t.id);
+    t.setAttribute('role', 'tabpanel');
+    t.setAttribute('aria-labelledby', b.id);
+    t.tabIndex = 0;
+    [].forEach.call(t.querySelectorAll('h3'), function (h) { if (!h.id) h.id = t.id + '-' + slug(h.textContent); });
+    b.addEventListener('click', function () { show(i, true); });
+    list.appendChild(b);
+    return b;
+  });
+  tracks[0].parentNode.insertBefore(wrap, tracks[0]);
+
+  function setOpen(open) {
+    wrap.classList.toggle('is-open', open);
+    toc.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  function place() {
+    var b = tabs[cur];
+    toc.style.left = (b.offsetLeft + b.offsetWidth / 2 - toc.offsetWidth / 2) + 'px';
+    nav.style.left = b.offsetLeft + 'px';
+    nav.style.width = b.offsetWidth + 'px';
+  }
+  function build() {
+    nav.innerHTML = '';
+    [].forEach.call(tracks[cur].querySelectorAll('h3'), function (h) {
+      var li = TT.el('li'), a = TT.el('a', '', h.textContent);
+      a.href = '#' + h.id;
+      a.addEventListener('click', function (event) {
+        event.preventDefault();
+        setOpen(false);
+        h.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', '#' + h.id);
+      });
+      li.appendChild(a);
+      nav.appendChild(li);
+    });
+  }
+  function show(i, push) {
+    if (i !== cur) {
+      cur = i;
+      tracks.forEach(function (t, j) {
+        var on = i === j;
+        t.hidden = !on;
+        tabs[j].setAttribute('aria-selected', on ? 'true' : 'false');
+        tabs[j].tabIndex = on ? 0 : -1;
+      });
+      build();
+    }
+    setOpen(false);
+    place();
+    if (push) history.replaceState(null, '', '#' + tracks[i].id);
+  }
+  /* the track a hash points at: the track itself or an element inside it */
+  function fromHash() {
+    var id = decodeURIComponent(location.hash.slice(1)), el = id && document.getElementById(id);
+    var t = el && (el.classList.contains('tt-track') ? el : el.closest('.tt-track'));
+    var i = tracks.indexOf(t);
+    show(i < 0 ? (cur < 0 ? 0 : cur) : i, false);
+    if (i >= 0) (el === t ? wrap : el).scrollIntoView();   /* hiding the other tracks moved the target */
+  }
+  fromHash();
+  window.addEventListener('hashchange', fromHash);
+  window.addEventListener('resize', place);
+
+  list.addEventListener('keydown', function (event) {
+    var i = tabs.indexOf(document.activeElement), n = tabs.length, k = event.key, to = -1;
+    if (i < 0) return;
+    if (k === 'ArrowRight' || k === 'ArrowDown') to = (i + 1) % n;
+    else if (k === 'ArrowLeft' || k === 'ArrowUp') to = (i + n - 1) % n;
+    else if (k === 'Home') to = 0;
+    else if (k === 'End') to = n - 1;
+    if (to < 0) return;
+    event.preventDefault();
+    show(to, true);
+    tabs[to].focus();
+  });
+  toc.addEventListener('click', function (event) {
+    event.stopPropagation();
+    setOpen(!wrap.classList.contains('is-open'));
+  });
+  document.addEventListener('click', function (event) {
+    if (wrap.classList.contains('is-open') && !wrap.contains(event.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && wrap.classList.contains('is-open')) { setOpen(false); toc.focus(); }
+  });
+  /* the section being read gets the 3px rule in the panel */
+  var raf = 0;
+  window.addEventListener('scroll', function () {
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = 0;
+      var links = [].slice.call(nav.querySelectorAll('a')), now = null;
+      links.forEach(function (a) {
+        var h = document.getElementById(a.hash.slice(1));
+        if (h && h.getBoundingClientRect().top < 140) now = a;
+      });
+      links.forEach(function (a) { a.classList.toggle('is-current', a === now); });
+    });
+  }, { passive: true });
 })();
 </script>
