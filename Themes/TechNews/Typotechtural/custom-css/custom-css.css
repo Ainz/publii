@@ -1660,9 +1660,13 @@ li ul { margin-top: .2rem; }
   @media (max-width: 50em) {
     .tt-tabs { margin-bottom: 2.6rem; }
     .tt-tabs__list { flex-direction: column; }
-    .tt-tabs .tt-tabs__tab { flex: 0 0 auto; justify-content: flex-start; text-align: left; padding: .6rem .75rem; font-size: .8125rem; }
+    .tt-tabs .tt-tabs__tab { flex: 0 0 auto; justify-content: flex-start; text-align: left; padding: .7rem .9rem; }
     .tt-tabs .tt-tabs__tab + .tt-tabs__tab { border-left: 0; border-top: 1px solid rgba(235, 234, 229, .2); }
     .tt-tabs .tt-tabs__tab[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--tt-blue-light); }
+  }
+  /* phones: the CV index bar's phone size (13px, tighter rows) */
+  @media (max-width: 40em) {
+    .tt-tabs .tt-tabs__tab { padding: .6rem .75rem; font-size: .8125rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     .tt-tabs .tt-tabs__tab, .tt-tabs .tt-tabs__toc, .tt-tabs__toc::after { transition: none; }
