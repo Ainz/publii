@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.67 · Custom CSS
+| CONRAM.IT · Typotechtural 1.68 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1592,9 +1592,10 @@ li ul { margin-top: .2rem; }
    Bar = the CV index bar (navy, Geist Mono 15px/600 caps .07em, 37px, shadow); three equal tabs, text centred.
    Tab hover = dropdown hover (sharp-blue fill, white text); current = 3px light-blue rule at the foot; focus = Ivory ring.
    INNEHÅLL hangs centred under the current tab; hover = the CV index bar's 3px light-blue rule; its panel = the CV index panel.
+   Wide screens: the whole navy section (tabs + INNEHÅLL) sticks to the top while scrolling, like the CV index bar.
    Without the script the three tracks simply follow each other. Print: the open track only, no bar. */
 @media screen {
-  .tt-tabs { position: relative; margin: 1.6rem 0 2.4rem; background: var(--tt-navy); box-shadow: 0 6px 14px rgba(0, 0, 0, .12); }
+  .tt-tabs { position: sticky; top: 0; z-index: 30; margin: 1.6rem 0 2.4rem; background: var(--tt-navy); box-shadow: 0 6px 14px rgba(0, 0, 0, .12); }
   .tt-tabs__list { display: flex; margin: 0; padding: 0; }
   /* .tt-tabs prefix: the theme paints button:hover/:focus/:active black */
   .tt-tabs .tt-tabs__tab,
@@ -1654,11 +1655,14 @@ li ul { margin-top: .2rem; }
   .tt-tabs__nav a:focus-visible { outline: 2px solid var(--tt-blue); outline-offset: -2px; }
 
   .tt-track[hidden] { display: none !important; }
-  .tt-track h3 { scroll-margin-top: 1rem; }
+  /* direct links land below the sticky bar; the panel takes focus for screen readers but draws no box */
+  .tt-track, .tt-track h3 { scroll-margin-top: 5.5rem; }
+  .tt-track:focus { outline: none; }
 
   /* below 50em (phones, tablets upright) three equal tabs would wrap: stacked, the current rule on the left edge as in the dropdowns */
   @media (max-width: 50em) {
-    .tt-tabs { margin-bottom: 2.6rem; }
+    .tt-tabs { position: relative; z-index: auto; margin-bottom: 2.6rem; }   /* three stacked rows would take too much screen to stick */
+    .tt-track, .tt-track h3 { scroll-margin-top: 1rem; }
     .tt-tabs__list { flex-direction: column; }
     .tt-tabs .tt-tabs__tab { flex: 0 0 auto; justify-content: flex-start; text-align: left; padding: .7rem .9rem; }
     .tt-tabs .tt-tabs__tab + .tt-tabs__tab { border-left: 0; border-top: 1px solid rgba(235, 234, 229, .2); }

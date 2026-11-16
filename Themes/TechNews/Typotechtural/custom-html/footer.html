@@ -1,4 +1,4 @@
-<!-- Typotechtural 1.24 · Footer: site scripts · credits and licence in <head> -->
+<!-- Typotechtural 1.25 · Footer: site scripts · credits and licence in <head> -->
 <!-- 0. Core (window.TT; must stay first) -->
 <script>
 /* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
@@ -877,7 +877,7 @@
     var t = el && (el.classList.contains('tt-track') ? el : el.closest('.tt-track'));
     var i = tracks.indexOf(t);
     show(i < 0 ? (cur < 0 ? 0 : cur) : i, false);
-    if (i >= 0) (el === t ? wrap : el).scrollIntoView();   /* hiding the other tracks moved the target */
+    if (i >= 0) el.scrollIntoView();   /* hiding the other tracks moved the target; CSS scroll-margin clears the bar */
   }
   fromHash();
   window.addEventListener('hashchange', fromHash);

@@ -4,13 +4,17 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.67 |
+| Custom CSS | 1.68 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
-| Custom HTML › Footer | 1.24 |
+| Custom HTML › Footer | 1.25 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.68, Footer 1.25** (16 Nov 2026)
+- Résumé tabs: on wide screens the whole navy section (tabs + INNEHÅLL) sticks to the top while scrolling, like the CV index bar. Stacked tabs (below 50em) do not stick.
+- Direct links to a track or a heading land below the sticky bar (scroll margin); the focused track no longer draws a black box.
 
 **CSS 1.67, Footer 1.24** (16 Nov 2026)
 - Résumé pages: two or more `div.tt-track` (id + H2) become tabs (Footer block 10). Tab label from `data-tab`, else the H2. A hash naming a track or an element inside it opens that track; switching updates the hash. Without the script the tracks follow each other.
