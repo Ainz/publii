@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.68 · Custom CSS
+| CONRAM.IT · Typotechtural 1.69 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1306,7 +1306,12 @@ li ul { margin-top: .2rem; }
   border: 1px solid rgba(36, 39, 41, .2);
 }
 .cv-layout .cv-name { font-size: 1.15rem; line-height: 1.35; }
-.cv-layout .cv-updated { font: 500 .72rem/1.4 var(--tt-mono); opacity: .65; }
+.cv-layout .cv-updated,
+.main.page .content__entry .cv-updated { font: 500 .72rem/1.4 var(--tt-mono); opacity: .65; }
+/* CV landing page (cv-and-resume): language rows, flag + Résumé | Curriculum */
+.main.page .content__entry .cv-langs { display: flex; flex-direction: column; gap: .25em; margin: 1em 0 1.2em; }
+.main.page .content__entry .cv-langs p { display: flex; align-items: center; gap: .5em; margin: 0; line-height: 1.2; }
+.main.page .content__entry .cv-langs img { display: inline-block; width: 31px; height: 21px; margin: 0; padding: 0; border: 0; object-fit: cover; }
 .cv-layout .cv-section { margin: 0 0 1.75rem; }
 /* Master CV headings (.cv-doc pages only; old CV pages keep the h3/h4 rules above) */
 .cv-layout.cv-doc .cv-title { margin: 0 0 1.2rem; text-align: center; font: 600 1.35rem/1.3 var(--heading-font); }

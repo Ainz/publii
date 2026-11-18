@@ -4,13 +4,16 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.68 |
+| Custom CSS | 1.69 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
 | Custom HTML › Footer | 1.25 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.69** (18 Nov 2026)
+- CV landing page: classes `cv-langs` (flag + Résumé | Curriculum rows) and `cv-updated` outside the CV layout, replacing long inline styles in the page. No visible change to the flag rows.
 
 **CSS 1.68, Footer 1.25** (16 Nov 2026)
 - Résumé tabs: on wide screens the whole navy section (tabs + INNEHÅLL) sticks to the top while scrolling, like the CV index bar. Stacked tabs (below 50em) do not stick.
