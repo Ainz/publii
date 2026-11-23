@@ -1391,6 +1391,10 @@ li ul { margin-top: .2rem; }
   .cv-layout.cv-resume .cv-title { display: none !important; }
   .cv-layout.cv-resume li,
   .cv-layout.cv-resume li + li { margin: 0; }
+  /* Résumé print: a smaller title band and portrait; the name block, not the photo, sets the height */
+  .main.page:has(.cv-resume) > .content > .content__header { padding: 0 0 4pt !important; margin: 0 !important; min-height: 0 !important; }
+  .main.page:has(.cv-resume) > .content > .content__header h1 { font-size: 16pt !important; line-height: 1.2 !important; margin: 0 !important; }
+  .cv-layout.cv-resume .cv-portrait { width: 110px; height: 110px; }
   .cv-layout.cv-doc h2 { font-size: 13pt; margin: 10pt 0 4pt; page-break-after: avoid; }
   .cv-layout.cv-doc h3 { font-size: 11.5pt; margin: 8pt 0 3pt; padding-top: 5pt; page-break-after: avoid; }
   .main.page .content__entry .cv-layout.cv-doc h4 { font-size: 8.5pt; margin: 6pt 0 2pt; page-break-after: avoid; }
