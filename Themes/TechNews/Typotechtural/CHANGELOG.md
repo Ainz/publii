@@ -4,13 +4,17 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.70 |
+| Custom CSS | 1.71 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
 | Custom HTML › Footer | 1.25 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.71** (23 Nov 2026)
+- New class `no-print`: hides any element in page content in print only. Used on the résumé pages for the role-fit paragraph, the Ways of working section and a repeated IAM education line.
+- Résumé print: the track subtitle (`tt-track__sub`) is not printed (the H2 names the track).
 
 **CSS 1.70** (23 Nov 2026)
 - Résumé print (aim: one track on 3 A4 pages): the introduction (`tt-track-lead`) and the "Curriculum Vitae | Résumé" title line are not printed; bullets have no gap between them; the page title band prints at 16pt with no padding, and the portrait at 110px. Body line height, font size and screen layout unchanged.

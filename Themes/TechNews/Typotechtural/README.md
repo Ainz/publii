@@ -25,7 +25,7 @@ Useful documentation:
 
 | File | Publii field | Version |
 |---|---|---|
-| `custom-css/custom-css.css` | Tools › Custom CSS | 1.70 |
+| `custom-css/custom-css.css` | Tools › Custom CSS | 1.71 |
 | `custom-html/head.html` | Tools › Custom HTML › Head | 1.04 |
 | `custom-html/body.html` | Tools › Custom HTML › Body | 1.04 |
 | `custom-html/footer.html` | Tools › Custom HTML › Footer | 1.25 |

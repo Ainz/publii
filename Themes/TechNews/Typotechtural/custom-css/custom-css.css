@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.70 · Custom CSS
+| CONRAM.IT · Typotechtural 1.71 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1388,7 +1388,10 @@ li ul { margin-top: .2rem; }
   /* Résumé print: the introduction and the title line only serve the screen (choosing a track);
      bullets follow each other like lines in a paragraph. Line height and font size unchanged. */
   .cv-layout.cv-resume .tt-track-lead,
-  .cv-layout.cv-resume .cv-title { display: none !important; }
+  .cv-layout.cv-resume .cv-title,
+  .cv-layout.cv-resume .tt-track__sub { display: none !important; }
+  /* .no-print: put on any element in page content that should stay on screen but not on paper */
+  .no-print { display: none !important; }
   .cv-layout.cv-resume li,
   .cv-layout.cv-resume li + li { margin: 0; }
   /* Résumé print: a smaller title band and portrait; the name block, not the photo, sets the height */
