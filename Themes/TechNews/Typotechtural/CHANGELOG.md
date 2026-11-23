@@ -4,13 +4,16 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 | Field | Current |
 |---|---|
-| Custom CSS | 1.69 |
+| Custom CSS | 1.70 |
 | Custom HTML › Head | 1.04 |
 | Custom HTML › Body | 1.04 |
 | Custom HTML › Footer | 1.25 |
 | Footer › Copyright text | 1.06 |
 
 ## 1.xx
+
+**CSS 1.70** (23 Nov 2026)
+- Résumé print (aim: one track on 3 A4 pages): the introduction (`tt-track-lead`) and the "Curriculum Vitae | Résumé" title line are not printed; bullets have no gap between them. Line height, font size and screen layout unchanged.
 
 **CSS 1.69** (18 Nov 2026)
 - CV landing page: classes `cv-langs` (flag + Résumé | Curriculum rows) and `cv-updated` outside the CV layout, replacing long inline styles in the page. No visible change to the flag rows.

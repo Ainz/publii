@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.69 · Custom CSS
+| CONRAM.IT · Typotechtural 1.70 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1385,6 +1385,12 @@ li ul { margin-top: .2rem; }
   .cv-layout .cv-list > .cv-item:nth-child(odd) { background: #fff !important; }
   .cv-layout .cv-desc ul { margin: .2rem 0 .15rem 1rem; }
   .cv-layout .cv-desc li { margin: .06rem 0; }
+  /* Résumé print: the introduction and the title line only serve the screen (choosing a track);
+     bullets follow each other like lines in a paragraph. Line height and font size unchanged. */
+  .cv-layout.cv-resume .tt-track-lead,
+  .cv-layout.cv-resume .cv-title { display: none !important; }
+  .cv-layout.cv-resume li,
+  .cv-layout.cv-resume li + li { margin: 0; }
   .cv-layout.cv-doc h2 { font-size: 13pt; margin: 10pt 0 4pt; page-break-after: avoid; }
   .cv-layout.cv-doc h3 { font-size: 11.5pt; margin: 8pt 0 3pt; padding-top: 5pt; page-break-after: avoid; }
   .main.page .content__entry .cv-layout.cv-doc h4 { font-size: 8.5pt; margin: 6pt 0 2pt; page-break-after: avoid; }
