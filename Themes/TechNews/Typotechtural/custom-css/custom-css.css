@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.72 · Custom CSS
+| CONRAM.IT · Typotechtural 1.73 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1160,9 +1160,10 @@ body.home-template > .tt-intro {
      inside a 2em indent; text starts 2em in from the paragraph edge, nested lists another 2em.
      Items .45em apart; an item that carries a sub-list, or
      starts with a bold/italic lead line followed by a line break, gets paragraph spacing (.9em).
-   - Images in text: below 44rem of content width, keep the non-floating block treatment. At or above
-     that content width, only right-aligned inline figures regain the stock float, 50% image limit and
-     stock margins. This leaves about 19rem for text at the threshold and retains v23 phone protection.
+   - Images in text: below 44rem of content width, keep the non-floating block treatment (left- and
+     right-aligned figures keep their side as blocks). At or above that content width, left- and
+     right-aligned inline figures regain the stock float, 50% image limit and stock margins (left
+     added in 1.73). This leaves about 19rem for text at the threshold and retains v23 phone protection.
    - Figures were inline-block (stock), so their margins did not collapse: 70px before a heading,
      ~67px between two images. Block display makes them collapse like every other block.
    - Captions in text were Ivory on a light surface (figcaption uses --gray, which the palette maps
@@ -1195,8 +1196,8 @@ body.home-template > .tt-intro {
 }
 
 /* Inline-image flow: use the actual Post/Page reading width for the responsive decision. */
-.main.post .content__entry:has(figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full)),
-.main.page .content__entry:has(figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full)) {
+.main.post .content__entry:has(figure.post__image:is(.post__image--left, .post__image--right):not(.post__image--wide):not(.post__image--full)),
+.main.page .content__entry:has(figure.post__image:is(.post__image--left, .post__image--right):not(.post__image--wide):not(.post__image--full)) {
   container-name: tt-inline-image-flow;
   container-type: inline-size;
 }
@@ -1209,11 +1210,16 @@ body.home-template > .tt-intro {
   max-width: min(100%, 72ch);
   margin: 2rem auto;
 }
-/* Preserve editor-selected right alignment while the content column is too narrow to float safely. */
+/* Preserve editor-selected left/right alignment while the content column is too narrow to float safely. */
 .main.post .content__entry figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full),
 .main.page .content__entry figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full) {
   margin-left: auto;
   margin-right: 0;
+}
+.main.post .content__entry figure.post__image.post__image--left:not(.post__image--wide):not(.post__image--full),
+.main.page .content__entry figure.post__image.post__image--left:not(.post__image--wide):not(.post__image--full) {
+  margin-left: 0;
+  margin-right: auto;
 }
 /* Restore stock TechNews wrapping only when the reading column leaves a comfortable text measure. */
 @container tt-inline-image-flow (min-width: 44rem) {
@@ -1222,6 +1228,12 @@ body.home-template > .tt-intro {
     float: right;
     max-width: 50%;
     margin: 0 0 2.6714285714rem 2.6714285714rem;
+  }
+  .main.post .content__entry figure.post__image.post__image--left:not(.post__image--wide):not(.post__image--full),
+  .main.page .content__entry figure.post__image.post__image--left:not(.post__image--wide):not(.post__image--full) {
+    float: left;
+    max-width: 50%;
+    margin: 0 2.6714285714rem 2.6714285714rem 0;
   }
 }
 .main.post .content__entry figure.post__image:not(.post__image--wide):not(.post__image--full) > img,

@@ -12,6 +12,9 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 ## 1.xx
 
+**CSS 1.73** (25 Nov 2026)
+- Images in text: left-aligned figures now float like right-aligned ones, mirrored (float left, 50% limit, stock margins swapped), when the reading column is at least 44rem. Below that, left-aligned figures stay blocks on the left, right-aligned on the right; phones are unchanged (full width, no float). Before, "Align left" in the editor always gave a centred block.
+
 **Footer 1.27** (25 Nov 2026)
 - Keyboard: a menu label with a dropdown (Publii "Text separator", `span.is-separator`, e.g. Info) gets `tabindex="0"` and `role="button"`, so Tab reaches it and the theme opens its dropdown as it does for links (WCAG 2.1.1). Before, Tab went from Archive straight to Contact and About, SiteLog and Imprint were only reachable in the footer bar.
 
