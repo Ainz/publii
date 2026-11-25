@@ -12,6 +12,9 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 ## 1.xx
 
+**CSS 1.74** (25 Nov 2026)
+- Images in text, floated (left or right, column at least 44rem): margins 1.775em above, 1.5em to the text side, 1em below (were 0 / 2.67rem / 2.67rem, stock). The image top now lines up with the first line of the text beside it instead of hanging one paragraph gap above it, and the text beside it gets more width. Checked on the compression post and the Vivaldi post.
+
 **CSS 1.73** (25 Nov 2026)
 - Images in text: left-aligned figures now float like right-aligned ones, mirrored (float left, 50% limit, stock margins swapped), when the reading column is at least 44rem. Below that, left-aligned figures stay blocks on the left, right-aligned on the right; phones are unchanged (full width, no float). Before, "Align left" in the editor always gave a centred block.
 

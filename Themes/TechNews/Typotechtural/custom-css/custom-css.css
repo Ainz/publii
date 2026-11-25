@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.73 · Custom CSS
+| CONRAM.IT · Typotechtural 1.74 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -1164,6 +1164,11 @@ body.home-template > .tt-intro {
      right-aligned figures keep their side as blocks). At or above that content width, left- and
      right-aligned inline figures regain the stock float, 50% image limit and stock margins (left
      added in 1.73). This leaves about 19rem for text at the threshold and retains v23 phone protection.
+   - Floats and vertical rhythm (1.74): paragraphs here are spaced by margin-top (about 1.4em), so a float
+     that starts with no top margin sits one paragraph gap above the text beside it. The top margin is the
+     paragraph gap plus half the leading (1.775em), which puts the image top on the first text line; the
+     side gap is 1.5em, near the paragraph rhythm, instead of the stock 2.67rem. Check vertically, not
+     only by width, when changing anything here.
    - Figures were inline-block (stock), so their margins did not collapse: 70px before a heading,
      ~67px between two images. Block display makes them collapse like every other block.
    - Captions in text were Ivory on a light surface (figcaption uses --gray, which the palette maps
@@ -1227,13 +1232,13 @@ body.home-template > .tt-intro {
   .main.page .content__entry figure.post__image.post__image--right:not(.post__image--wide):not(.post__image--full) {
     float: right;
     max-width: 50%;
-    margin: 0 0 2.6714285714rem 2.6714285714rem;
+    margin: 1.775em 0 1em 1.5em;
   }
   .main.post .content__entry figure.post__image.post__image--left:not(.post__image--wide):not(.post__image--full),
   .main.page .content__entry figure.post__image.post__image--left:not(.post__image--wide):not(.post__image--full) {
     float: left;
     max-width: 50%;
-    margin: 0 2.6714285714rem 2.6714285714rem 0;
+    margin: 1.775em 1.5em 1em 0;
   }
 }
 .main.post .content__entry figure.post__image:not(.post__image--wide):not(.post__image--full) > img,
