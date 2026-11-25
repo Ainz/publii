@@ -1,4 +1,4 @@
-<!-- Typotechtural 1.26 · Footer: site scripts · credits and licence in <head> -->
+<!-- Typotechtural 1.27 · Footer: site scripts · credits and licence in <head> -->
 <!-- 0. Core (window.TT; must stay first) -->
 <script>
 /* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
@@ -578,6 +578,13 @@
       util.push(match);
     });
   }
+
+  /* 1a. a label with a dropdown (Publii "Text separator", span.is-separator) gets keyboard focus, so
+         Tab reaches it and the theme opens its dropdown as for links (WCAG 2.1.1) */
+  Array.prototype.forEach.call(main.querySelectorAll('li.has-submenu > span.is-separator'), function (s) {
+    s.setAttribute('tabindex', '0');
+    s.setAttribute('role', 'button');
+  });
 
   /* 1b. current page: Publii doesn't flag the front-page link, so mark every top-level match here */
   Array.prototype.forEach.call(main.children, function (li) {

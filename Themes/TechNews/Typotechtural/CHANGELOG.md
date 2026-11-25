@@ -12,6 +12,9 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 ## 1.xx
 
+**Footer 1.27** (25 Nov 2026)
+- Keyboard: a menu label with a dropdown (Publii "Text separator", `span.is-separator`, e.g. Info) gets `tabindex="0"` and `role="button"`, so Tab reaches it and the theme opens its dropdown as it does for links (WCAG 2.1.1). Before, Tab went from Archive straight to Contact and About, SiteLog and Imprint were only reachable in the footer bar.
+
 **CSS 1.72, Footer 1.26** (25 Nov 2026)
 - Menus: the Publii Footer menu sets the right-hand group and its order. A Footer-menu item named like a top-level Main-menu item moves that Main-menu item to the right with its dropdown (CV & Résumé, Info); other Footer-menu items are copied as links (Archive, Contact). Needed because the stock footer menu outputs no submenus. Without the script, CV & Résumé and Info stay at the end of the left group.
 - Footer bar: flat; a label with a dropdown (Info) is replaced by its items, a link with a dropdown (CV & Résumé) stays one link. Right group gets the top bar's hairline and quieter weight; the hairline is dropped when the group wraps (below 64em).
