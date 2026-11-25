@@ -12,6 +12,11 @@ One version number per Publii field, `1.xx`, raised on every change.
 
 ## 1.xx
 
+**CSS 1.72, Footer 1.26** (25 Nov 2026)
+- Menus: the Publii Footer menu sets the right-hand group and its order. A Footer-menu item named like a top-level Main-menu item moves that Main-menu item to the right with its dropdown (CV & Résumé, Info); other Footer-menu items are copied as links (Archive, Contact). Needed because the stock footer menu outputs no submenus. Without the script, CV & Résumé and Info stay at the end of the left group.
+- Footer bar: flat; a label with a dropdown (Info) is replaced by its items, a link with a dropdown (CV & Résumé) stays one link. Right group gets the top bar's hairline and quieter weight; the hairline is dropped when the group wraps (below 64em).
+- Top bar: dropdown parents in the right group, including a label without a link, follow the quieter weight and go full strength on hover, focus or when a child page is open. Section 7 comment corrected (block 6, not 7).
+
 **CSS 1.71** (23 Nov 2026)
 - New class `no-print`: hides any element in page content in print only. Used on the résumé pages for the role-fit paragraph, the Ways of working section and a repeated IAM education line.
 - Résumé print: the track subtitle (`tt-track__sub`) is not printed (the H2 names the track).

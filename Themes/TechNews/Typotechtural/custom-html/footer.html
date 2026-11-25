@@ -1,4 +1,4 @@
-<!-- Typotechtural 1.25 · Footer: site scripts · credits and licence in <head> -->
+<!-- Typotechtural 1.26 · Footer: site scripts · credits and licence in <head> -->
 <!-- 0. Core (window.TT; must stay first) -->
 <script>
 /* Shared core, window.TT: categories, site root, fetch cache, card and post data, tiles, heading index. */
@@ -533,7 +533,7 @@
 </script>
 <!-- 6. Menus -->
 <script>
-/* Menus: Footer menu items join the top bar (li.nav-util); the footer gets one bar with both groups.
+/* Menus: Footer menu items join the top bar (li.nav-util), Main-menu dropdowns moved by name; the footer gets one bar with both groups.
    Runs before the theme's menu script, so the mobile menu includes them. */
 (function () {
   var main = document.querySelector('.topbar .navbar__menu');
@@ -558,14 +558,24 @@
     return li;
   }
 
-  /* 1. top bar: utility group */
+  /* 1. top bar: utility group, in Footer-menu order. The stock footer menu has no submenus, so a
+        Footer-menu item named like a top-level Main-menu item moves that item, dropdown included,
+        to the right (CV & Résumé, Info); any other Footer-menu item is copied as a link. */
+  function name(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim().toLowerCase() : ''; }
+  function head(li) { return li.querySelector(':scope > a, :scope > span'); }
   var util = [];
   if (sub) {
-    Array.prototype.forEach.call(sub.children, function (li) {
-      var a = li.querySelector('a, span');
+    Array.prototype.forEach.call(sub.children, function (fli) {
+      var a = head(fli);
       if (!a) return;
-      util.push(a);
-      main.appendChild(item(a, 'nav-util'));
+      var n = name(a), match = null;
+      Array.prototype.forEach.call(main.children, function (li) {
+        if (!match && !li.classList.contains('nav-util') && name(head(li)) === n) match = li;
+      });
+      if (match) match.classList.add('nav-util');
+      else match = item(a, 'nav-util');
+      main.appendChild(match);
+      util.push(match);
     });
   }
 
@@ -596,7 +606,18 @@
     if (li.classList.contains('active-parent')) n.classList.add('active-parent');
     left.appendChild(n);
   });
-  util.forEach(function (a) { right.appendChild(item(a)); });
+  /* right group flat: a label with a dropdown (Info) gives its children, a link gives itself */
+  util.forEach(function (li) {
+    var h = head(li);
+    if (!h) return;
+    if (h.tagName.toLowerCase() === 'span') {
+      Array.prototype.forEach.call(li.querySelectorAll(':scope > ul > li > a'), function (c) { right.appendChild(item(c)); });
+    } else {
+      var r = item(h);
+      if (li.classList.contains('active-parent')) r.classList.add('active-parent');
+      right.appendChild(r);
+    }
+  });
   bar.appendChild(left);
   if (right.children.length) bar.appendChild(right);
   current(bar);

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------+
-| CONRAM.IT · Typotechtural 1.71 · Custom CSS
+| CONRAM.IT · Typotechtural 1.72 · Custom CSS
 | Theme adaptation of Technews 3.2.0.0 by TidyCustoms
 | (tidycustoms.net) for Publii (getpublii.com)
 +--------------------------------------------------------+
@@ -2586,9 +2586,10 @@ body:has(> .cbanner) .topbar { margin-bottom: 1rem; }
   .navbar_mobile_sidebar .navbar__menu li a { font-family: var(--tt-mono); letter-spacing: .06em; }
 }
 
-/* 7. Utility group: Archive / About / Contact, from the Publii Footer menu, copied into the main
-   bar by the menu script (Footer block 7) as li.nav-util. Pushed to the right, a hairline before
-   the group, same type at a quieter weight. Without the script the main bar is unchanged. */
+/* 7. Utility group: the Publii Footer menu sets its items and order; the menu script (Footer block 6)
+   moves a Main-menu item with the same name to the right, dropdown included (CV & Résumé, Info),
+   and copies the rest as links (Archive, Contact), all as li.nav-util. Pushed to the right, a
+   hairline before the group, same type at a quieter weight. Without the script the main bar is unchanged. */
 body:has(> .cbanner) .navbar .navbar__menu { width: 100%; }
 body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:not(.nav-util ~ .nav-util) { margin-left: auto; position: relative; }
 body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:not(.nav-util ~ .nav-util)::before {
@@ -2598,6 +2599,14 @@ body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:not(.nav-util ~ .nav-ut
 body:has(> .cbanner) .navbar .navbar__menu > li.nav-util > a { opacity: .7; }
 body:has(> .cbanner) .navbar .navbar__menu > li.nav-util > a:hover,
 body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active > a { opacity: 1; }
+/* 1.72: dropdown parents in the group, including a label without a link (Info, span.is-separator) */
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util > span { opacity: .7; }
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:hover > a,
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:hover > span,
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:focus-within > a,
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util:focus-within > span,
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active-parent > a,
+body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active-parent > span { opacity: 1; }
 @media (max-width: 56.1875em) {
   /* hamburger: the utility items follow the main items after a divider */
   .navbar_mobile_overlay .navbar__menu > li.nav-util:not(.nav-util ~ .nav-util),
@@ -2609,8 +2618,10 @@ body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active > a { opacity: 1
 .pagination.tt-replaced { display: none; }
 
 /* 9. Repeated menu bar at the top of the footer: built by the menu script from the main bar,
-   top level only (Projects and CV & Résumé are landing pages): main group left, utility group right;
-   on a narrow screen the utility group wraps to its own line. */
+   flat: main group left, top level only (Projects is a landing page); utility group right, where a
+   label with a dropdown (Info) is replaced by its items and CV & Résumé stays one link. Hairline
+   and quieter weight as in the top bar (1.72); on a narrow screen the utility group wraps to its
+   own line and the hairline goes. */
 .tt-footnav {
   flex: 0 0 100%; width: 100%; box-sizing: border-box;   /* .footer is a flex row (stock) */
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .9rem 2.5rem;
@@ -2634,6 +2645,19 @@ body:has(> .cbanner) .navbar .navbar__menu > li.nav-util.active > a { opacity: 1
 .tt-footnav a:focus-visible { outline: 2px solid var(--tt-ivory); outline-offset: 3px; }
 .tt-footnav li.active > a,
 .tt-footnav li.active-parent > a { color: var(--tt-ivory); box-shadow: inset 0 -3px 0 var(--tt-blue-light); }
+.tt-footnav__util { position: relative; }
+.tt-footnav__util::before {
+  content: ""; position: absolute; left: -1.25rem; top: 50%; height: 1.1em; transform: translateY(-50%);
+  border-left: 1px solid rgba(235,234,229,.25);
+}
+.tt-footnav__util > li > a { opacity: .7; }
+.tt-footnav__util > li > a:hover,
+.tt-footnav__util > li > a:focus-visible,
+.tt-footnav__util > li.active > a,
+.tt-footnav__util > li.active-parent > a { opacity: 1; }
+@media (max-width: 63.9375em) {
+  .tt-footnav__util::before { content: none; }
+}
 @media (max-width: 40em) {
   .tt-footnav, .tt-footnav ul { gap: .9rem 1.5rem; }
 }
